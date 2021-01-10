@@ -1,0 +1,26 @@
+.reg-card {
+  margin-top: 50px;
+  padding: 0px;
+}
+
+.registerMessage {
+  margin-top: 10vh;
+}
+
+.loginText {
+  color: #007bff;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+#inputLine {
+  border: none;
+  border-bottom: 1px solid rgb(90, 82, 82);
+  outline: none;
+  width: 100%;
+}
+
+.successMessage {
+  color: green;
+  font-weight: bold;
+}
