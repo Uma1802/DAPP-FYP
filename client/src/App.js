@@ -1,5 +1,6 @@
 import React, { Component } from "react";
 import SimpleStorageContract from "./contracts/SimpleStorage.json";
+import Participants from "./contracts/Participants.json";
 import getWeb3 from "./getWeb3";
 import "./App.css";
 import { Route } from 'react-router-dom'
@@ -45,13 +46,15 @@ class App extends Component {
       const { accounts, contract } = this.state;
 
       // Stores a given value, 5 by default.
-      await contract.methods.set(5).send({ from: accounts[0] });
+      await contract.methods.set(50).send({ from: accounts[0] });
 
       // Get the value from the contract to prove it worked.
       const response = await contract.methods.get().call();
 
       // Update state with the result.
       this.setState({ storageValue: response });
+      alert("Value from contract: "+this.state.storageValue);
+      console.log("Value from contract: "+this.state.storageValue);
     }
     catch (error){
       console.error(error);
