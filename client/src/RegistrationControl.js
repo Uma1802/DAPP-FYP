@@ -15,6 +15,11 @@ class RegistrationControl extends Component {
         contract: null
     };
 
+    constructor(props){
+        super(props);
+        this.setState({web3: this.props.web3, current_account: this.props.current_account, contract: this.props.contract});
+    }
+
     updateType = (value) =>{
         this.setState({userType: value});
     }
@@ -64,6 +69,7 @@ class RegistrationControl extends Component {
                         console.log("Recovered address: "+recovered_address);
                         if (current_account == recovered_address){
                             console.log("Login success");
+                            this.props.onLoginSuccess();
                         }
                         else{
                             console.log("Login failed");
@@ -71,13 +77,14 @@ class RegistrationControl extends Component {
                     }
                     else{
                         alert("Current account is not registered!");
-                    }
-
-                    
+                    }                    
                 }
             }
             catch (error){
                 console.error(error);
+            }
+            finally{
+                this.props.changeAppState(this.state.web3,this.state.current_account,this.state.contract);
             }
         
      }

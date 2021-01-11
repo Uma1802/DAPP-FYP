@@ -36,7 +36,7 @@ class InstitutionDashBoard extends Component {
 
       <div className="container">        
         <div className="container reg-title-card mx-auto">
-            <h1>REGISTRATION</h1>
+            <h1>REGISTRATIONNNN</h1>
         </div>
         
         <div className="card col-12 col-lg-6 reg-card">

@@ -9,7 +9,11 @@ import InstitutionDashBoard from './institutionDash'
 import Header from './Header'
 
 class App extends Component {
-  state = { storageValue: 0, web3: null, accounts: null, contract: null };
+  state = { 
+          web3: null, 
+          current_account: null, 
+          contract: null 
+          };
 
   /*componentDidMount = async () => {
     try {
@@ -61,6 +65,9 @@ class App extends Component {
     }
     
   };
+  changeAppState = (web3, current_account, contract) =>{
+    this.setState({web3, current_account, contract})
+  }
 
   render() {
     /*if (!this.state.web3) {
@@ -81,17 +88,22 @@ class App extends Component {
         <div>The stored value is: {this.state.storageValue}</div>
       </div>*/
       <div>
-       <Route exact path='/' render={() => (  
-         <div>
-         <Header/> 
-        <RegistrationControl /> 
-        </div>
-      )}/>
-       <Route exact path='/institution' render={() => (   
+       <Route exact path='/' render={({ history }) => ( 
          <div> 
-         <Header/>
+          <Header/>
+          <RegistrationControl 
+              onLoginSuccess={() => {
+                history.push('/institution')
+                }}
+              web3 = {this.state.web3} 
+              current_account = {this.state.current_account} 
+              contract = {this.state.contract} 
+              changeAppState = {this.changeAppState}
+          /> 
+          </div>
+      )}/>
+       <Route exact path='/institution' render={() => (
          <InstitutionDashBoard/>
-         </div>
       )}/>
       </div>
     );
