@@ -2,12 +2,17 @@ import './RegistrationControl.css';
 import React, { Component } from 'react';
 import serializeForm from 'form-serialize';
 import Web3 from 'web3';
+import Participants from "./contracts/Participants.json";
+import getWeb3 from "./getWeb3";
 
 class RegistrationControl extends Component {  
     
     state={
         institution:"",
-        userType:""
+        userType:"",
+        web3: null, 
+        current_account: null, 
+        contract: null
     };
 
     updateType = (value) =>{
@@ -30,30 +35,73 @@ class RegistrationControl extends Component {
         //}
       }
 
-      loginButtonHandler = () => {
-        const web3 = new Web3(Web3.givenProvider);
-        this.connectMetamaskAccount()
-        .then((value) => { 
-            if (value != "NO METAMASK"){
-                var loginaddress = value;
-                var nonce = "SAMPLE NONCE";
-                console.log("Current address: "+loginaddress); 
-                web3.eth.personal.sign(nonce, loginaddress)
-                .then((value) => {
-                    console.log("Signature: "+value);
-                    web3.eth.personal.ecRecover(nonce, value)
-                    .then((value) => {
-                        console.log("Recovered address: "+value);
-                        if (value === loginaddress){
-                            console.log("Login Success");
+      loginButtonHandler = async() => {
+          try{
+                const web3 = new Web3(Web3.givenProvider);
+                const result = await this.connectMetamaskAccount();
+                if (result !== "NO METAMASK")
+                {
+                    const current_account = web3.utils.toChecksumAddress(result);
+                    console.log("Checksum of logged in account: "+current_account);
+
+                    const networkId = await web3.eth.net.getId();
+                    console.log("current network id: "+networkId);
+                    const deployedNetwork = Participants.networks[networkId];
+                    const instance = new web3.eth.Contract(
+                        Participants.abi,
+                        deployedNetwork && deployedNetwork.address,
+                      );
+                    this.setState({ web3, current_account, contract: instance });
+                    const loginstatus = await this.checkIfUserExists();
+                    if (loginstatus == "USER EXISTS")
+                    {
+                        const nonce = "HELLO WORLD NONCE";
+                        console.log("Current address: "+current_account);
+                        const signature = await web3.eth.personal.sign(nonce, current_account);
+                        console.log("Signature: "+signature);
+                        let res = await web3.eth.personal.ecRecover(nonce, signature);
+                        const recovered_address = web3.utils.toChecksumAddress(res);
+                        console.log("Recovered address: "+recovered_address);
+                        if (current_account == recovered_address){
+                            console.log("Login success");
                         }
                         else{
-                            console.log("Login Failed");
+                            console.log("Login failed");
                         }
-                    });
-                }); 
+                    }
+                    else{
+                        alert("Current account is not registered!");
+                    }
+
+                    
+                }
             }
-        });
+            catch (error){
+                console.error(error);
+            }
+        
+     }
+     checkIfUserExists = async() => {
+         var result = "USER DOES NOT EXIST";
+         try{
+            const { current_account, contract } = this.state;
+            const usersList = await contract.methods.getUsers().call();
+            console.log("Address list from contract: "+usersList);
+            console.log("Typeof usersList: "+typeof(usersList));
+            console.log("usersList array length: "+usersList.length);
+            const index = usersList.indexOf(current_account);
+            console.log("Index of current account: "+index);
+            if (index !== -1)
+            {
+                result = "USER EXISTS" ;
+            }
+         }
+         catch(error){
+             console.error(error);
+         }
+         finally{
+             return result;
+         }
      }
      connectMetamaskAccount = async() => {
         var result = "NO METAMASK"; 
