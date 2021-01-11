@@ -1,15 +1,16 @@
 import './RegistrationControl.css';
+import Header from '../Header/Header.js'
 import React, { Component } from 'react';
 import serializeForm from 'form-serialize';
 import Web3 from 'web3';
-import Participants from "./contracts/Participants.json";
-import getWeb3 from "./getWeb3";
+import Participants from "../contracts/Participants.json";
+import getWeb3 from "../getWeb3";
 
 class RegistrationControl extends Component {  
     
     state={
         userName:"",
-        institution:"",
+        institutionName:"",
         userType:"",
         web3: null, 
         current_account: null, 
@@ -21,17 +22,13 @@ class RegistrationControl extends Component {
         this.setState({web3: this.props.web3, current_account: this.props.current_account, contract: this.props.contract});
     }
 
+    onChange = (e) => {
+        this.setState({[e.target.name]: e.target.value});
+      }
+
     updateName = (value) =>{
         this.setState({userName: value});
-    }
-
-    updateType = (value) =>{
-        this.setState({userType: value});
-    }
-
-    updateInstitution = (value) =>{
-        this.setState({institution: value});
-    }
+    }    
 
     componentDidMount(){
         const web3 = new Web3(Web3.givenProvider);
@@ -39,10 +36,6 @@ class RegistrationControl extends Component {
     }
 
     handleSubmit = async(e) => {
-        /*if(this.state.institution==="default" || !this.state.institution){
-            this.setState({institution: ""});
-        }
-        else{*/
         e.preventDefault();
         try{
             const web3 = new Web3(Web3.givenProvider);
@@ -63,7 +56,7 @@ class RegistrationControl extends Component {
                 console.log("submit"+values);
                 console.log("name: "+this.state.userName);
                 console.log("type: "+this.state.userType);
-                console.log("institution: "+this.state.institution);
+                console.log("institution: "+this.state.institutionName);
                 var usertype_number;
                 if (this.state.userType === 'Institution')
                     usertype_number = 2;
@@ -75,7 +68,7 @@ class RegistrationControl extends Component {
                 try{
                     await contract.methods.createUserRequest(this.state.userName,
                         usertype_number,
-                        this.state.institution).send({ from: current_account });
+                        this.state.institutionName).send({ from: current_account });
                 }
                 catch(error)
                 {
@@ -126,7 +119,7 @@ class RegistrationControl extends Component {
                         console.log("Recovered address: "+recovered_address);
                         if (current_account == recovered_address){
                             console.log("Login success");
-                            this.props.onLoginSuccess();
+                            this.props.history.push('/institution')
                         }
                         else{
                             console.log("Login failed");
@@ -194,97 +187,106 @@ class RegistrationControl extends Component {
 
     return(
 
-      <div className="container">   
+        <div> 
+            <Header/>
 
-        <div className="row justify-content-center">
+            <div className="container">   
 
-        <div className="card col-12 col-lg-6 reg-card">
-            <h2 className="card-header bg-dark text-white">REGISTRATION</h2>
-            <div className="card-body">               
+            <div className="row justify-content-center">
 
-                <form onSubmit={(e) => this.handleSubmit(e)}>   
+            <div className="card col-12 col-lg-6 reg-card">
+                <h2 className="card-header bg-dark text-white">REGISTRATION</h2>
+                <div className="card-body">               
 
-                <div className="form-group text-left">   
-                    <div className="input-group mb-4">
-                        <div className="input-group-prepend">
-                            <span className="input-group-text"><i className="fas fa-user"></i></span>
-                        </div>
-                        <input type="text" 
-                                            className="form-control" 
-                                            id="name"  
-                                            placeholder="Your name" 
-                                            value = {this.state.userName}
-                                            onChange={(event) => this.updateName(event.target.value)}
-                                            required
-                        />    
-                    </div>  
-                </div>    
+                    <form onSubmit={(e) => this.handleSubmit(e)}>   
 
-                <div className="form-group text-left">
-                    <div className="input-group mb-4">
-                        <div className="input-group-prepend">
-                            <span className="input-group-text">
-                                <i className="fab fa-black-tie"></i>
-                            </span>
-                        </div>
-                        <select id="type" value={this.state.userType} onChange={(event) => this.updateType(event.target.value)}
-                        name="userType" className="form-control custom-select bg-white border-left-0 border-md" required>
-                            <option value="">Select type of user</option>
-                            <option value="Institution">Instituition</option>
-                            <option value="EduUser">Edu-User</option>
-                        </select>
-                    </div>                   
+                    <div className="form-group text-left">   
+                        <div className="input-group mb-4">
+                            <div className="input-group-prepend">
+                                <span className="input-group-text"><i className="fas fa-user"></i></span>
+                            </div>
+                            <input type="text" 
+                                                className="form-control" 
+                                                id="name"  
+                                                name="userName"
+                                                placeholder="Your name" 
+                                                value = {this.state.userName}
+                                                onChange={this.onChange}
+                                                required
+                            />    
+                        </div>  
+                    </div>    
+
+                    <div className="form-group text-left">
+                        <div className="input-group mb-4">
+                            <div className="input-group-prepend">
+                                <span className="input-group-text">
+                                    <i className="fab fa-black-tie"></i>
+                                </span>
+                            </div>
+                            <select id="type" value={this.state.userType} onChange={this.onChange}
+                            name="userType" className="form-control custom-select bg-white border-left-0 border-md" required>
+                                <option value="">Select type of user</option>
+                                <option value="Institution">Instituition</option>
+                                <option value="EduUser">Edu-User</option>
+                            </select>
+                        </div>                   
+                    </div>
+
+                    <div className="form-group text-left">
+                        <div className="input-group mb-4">
+                            <div className="input-group-prepend">
+                                <span className="input-group-text">
+                                    <i className="fas fa-university"></i>
+                                </span>
+                            </div>
+                            <select id="institution" name="institutionName"  value={this.state.institutionName} onChange={this.onChange} className="form-control custom-select bg-white border-left-0 border-md"
+                            required={this.state.userType === "EduUser" || this.state.userType === "" || (this.state.userType==="Institution" && this.state.institutionName==="")}>
+                                <option value="">Select instituition</option>
+                                <option value="ABC">ABC</option>
+                                <option value="EFG">EFG</option>
+                                <option value="HIJ">HIJ</option>
+                                {(this.state.userType === "EduUser" || this.state.userType === "") && ( <option value="Others">Others</option>           
+                                )}                         
+                            </select>
+                        </div>                   
+                    </div>
+
+                    {this.state.userType === "Institution" && (
+                    <div className="mb-4">
+                        <input
+                        id="inputLine"
+                        name="institutionName"
+                        type='text'
+                        name="institutionName"
+                        placeholder='If institution not found, please enter'
+                    />
+                    </div>
+                    )}                   
+
+                    <button 
+                        type="submit" 
+                        className="btn btn-primary"
+                    >Register</button>
+                        
+                    </form>                     
+
+                <div className="mt-2">
+                    <span>Already registered? </span>
+                    <span className="loginText" onClick={this.loginButtonHandler}>Login using metamask</span> 
                 </div>
 
-                <div className="form-group text-left">
-                    <div className="input-group mb-4">
-                        <div className="input-group-prepend">
-                            <span className="input-group-text">
-                                <i className="fas fa-university"></i>
-                            </span>
-                        </div>
-                        <select id="institution" name="institution"  value={this.state.institution} onChange={(event) => this.updateInstitution(event.target.value)} className="form-control custom-select bg-white border-left-0 border-md"
-                        required={this.state.userType === "EduUser" || this.state.userType === "" || (this.state.userType==="Institution" && this.state.institution==="")}>
-                            <option value="">Select instituition</option>
-                            <option value="ABC">ABC</option>
-                            <option value="EFG">EFG</option>
-                            <option value="HIJ">HIJ</option>
-                            {(this.state.userType === "EduUser" || this.state.userType === "") && ( <option value="Others">Others</option>           
-                            )}                         
-                        </select>
-                    </div>                   
-                </div>
+            </div>
 
-                {this.state.userType === "Institution" && (
-                <div className="mb-4">
-                    <input
-                    id="inputLine"
-                    type='text'
-                    onChange={(event) => this.updateInstitution(event.target.value)}
-                    placeholder='If institution not found, please enter'
-                />
-                </div>
-                )}                   
+        </div>
 
-                <button 
-                    type="submit" 
-                    className="btn btn-primary"
-                >Register</button>
+            </div>
+
+            </div>
                     
-                </form>                     
-
-            <div className="mt-2">
-                <span>Already registered? </span>
-                <span className="loginText" onClick={this.loginButtonHandler}>Login using metamask</span> 
-            </div>
-
-            </div>
-
         </div>
 
-        </div>
-       
-    </div>
+     
     )
     }
 }

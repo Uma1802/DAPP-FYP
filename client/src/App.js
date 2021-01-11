@@ -4,7 +4,7 @@ import Participants from "./contracts/Participants.json";
 import getWeb3 from "./getWeb3";
 import "./App.css";
 import { Route } from 'react-router-dom'
-import RegistrationControl from './RegistrationControl'
+import RegistrationControl from './RegistrationControl/RegistrationControl'
 import InstitutionDashBoard from './institutionDash'
 import Header from './Header'
 
@@ -89,18 +89,15 @@ class App extends Component {
       </div>*/
       <div>
        <Route exact path='/' render={({ history }) => ( 
-         <div> 
-          <Header/>
+         
           <RegistrationControl 
-              onLoginSuccess={() => {
-                history.push('/institution')
-                }}
+              history={history}
               web3 = {this.state.web3} 
               current_account = {this.state.current_account} 
               contract = {this.state.contract} 
               changeAppState = {this.changeAppState}
           /> 
-          </div>
+          
       )}/>
        <Route exact path='/institution' render={() => (
          <InstitutionDashBoard/>

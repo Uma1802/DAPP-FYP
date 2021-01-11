@@ -13,14 +13,15 @@
   cursor: pointer;
 }
 
-#inputLine {
-  border: none;
-  border-bottom: 1px solid rgb(90, 82, 82);
-  outline: none;
-  width: 100%;
+#inputLine{
+border: none;
+border-bottom: 1px solid rgb(90, 82, 82);
+outline: none;
+width:100%;
 }
 
 .successMessage {
   color: green;
   font-weight: bold;
 }
+

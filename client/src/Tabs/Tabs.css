@@ -1,0 +1,19 @@
+.nav-tabs {
+    border-bottom: 2px solid #dee2e6;
+}
+
+.nav-tabs .nav-link.active{
+    color:#FFF;
+    background-color: #314455;
+    border-top-width: 2px;
+    border-left-width: 2px;
+    border-right-width: 2px;
+}
+
+.tabs{
+    padding: 10px;
+}
+
+a{
+    color: #314455;
+}
