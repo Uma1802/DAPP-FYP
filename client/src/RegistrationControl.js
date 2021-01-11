@@ -8,6 +8,7 @@ import getWeb3 from "./getWeb3";
 class RegistrationControl extends Component {  
     
     state={
+        userName:"",
         institution:"",
         userType:"",
         web3: null, 
@@ -20,6 +21,10 @@ class RegistrationControl extends Component {
         this.setState({web3: this.props.web3, current_account: this.props.current_account, contract: this.props.contract});
     }
 
+    updateName = (value) =>{
+        this.setState({userName: value});
+    }
+
     updateType = (value) =>{
         this.setState({userType: value});
     }
@@ -28,15 +33,67 @@ class RegistrationControl extends Component {
         this.setState({institution: value});
     }
 
+    componentDidMount(){
+        const web3 = new Web3(Web3.givenProvider);
+        this.setState({web3});
+    }
 
-    handleSubmit = (e) => {
+    handleSubmit = async(e) => {
         /*if(this.state.institution==="default" || !this.state.institution){
             this.setState({institution: ""});
         }
         else{*/
-        e.preventDefault()
-        const values = serializeForm(e.target, { hash: true })
-        console.log("submit"+values);
+        e.preventDefault();
+        try{
+            const web3 = new Web3(Web3.givenProvider);
+            const result = await this.connectMetamaskAccount();
+            if (result !== "NO METAMASK"){
+                const current_account = web3.utils.toChecksumAddress(result);
+                console.log("Checksum of logged in account: "+current_account);
+                const networkId = await web3.eth.net.getId();
+                console.log("current network id: "+networkId);
+                const deployedNetwork = Participants.networks[networkId];
+                const instance = new web3.eth.Contract(
+                    Participants.abi,
+                    deployedNetwork && deployedNetwork.address,
+                    );
+                this.setState({ current_account, contract: instance });
+                const { contract } = this.state;
+                const values = serializeForm(e.target, { hash: true })
+                console.log("submit"+values);
+                console.log("name: "+this.state.userName);
+                console.log("type: "+this.state.userType);
+                console.log("institution: "+this.state.institution);
+                var usertype_number;
+                if (this.state.userType === 'Institution')
+                    usertype_number = 2;
+                else
+                    usertype_number = 3;
+                let res = await contract.methods.getPendingRequest().call();
+                console.log("requests list: "+res);
+                console.log("requests list size: "+res.length);
+                try{
+                    await contract.methods.createUserRequest(this.state.userName,
+                        usertype_number,
+                        this.state.institution).send({ from: current_account });
+                }
+                catch(error)
+                {
+                    alert("User already exists or user request is pending!");
+                }
+                
+                res = await contract.methods.getPendingRequest().call();
+                console.log("new requests list: "+res);
+                console.log("new requests list size: "+res.length);
+            }
+            else{
+                alert("Please install metamask!");
+            }
+        }
+        catch(error){
+            console.error(error);
+        }
+        
         //}
       }
 
@@ -156,6 +213,8 @@ class RegistrationControl extends Component {
                                             className="form-control" 
                                             id="name"  
                                             placeholder="Your name" 
+                                            value = {this.state.userName}
+                                            onChange={(event) => this.updateName(event.target.value)}
                                             required
                         />    
                     </div>  
