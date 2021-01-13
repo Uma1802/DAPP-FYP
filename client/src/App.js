@@ -6,7 +6,7 @@ import "./App.css";
 import { Route } from 'react-router-dom'
 import RegistrationControl from './RegistrationControl/RegistrationControl'
 import InstitutionDashBoard from './institutionDash'
-import Header from './Header'
+import Header from './Header/Header'
 
 class App extends Component {
   state = { 
