@@ -9,7 +9,6 @@ class PendingRequest extends Component {
 
     state={
         pending_requests:null,
-        web3: this.props.web3, 
         current_account: this.props.current_account, 
         contract: this.props.contract,
         element: null
@@ -17,7 +16,6 @@ class PendingRequest extends Component {
 
     constructor(props){
         super(props);
-        //this.loadPendingRequests();
         console.log("in constructor");
     }
 
@@ -29,30 +27,43 @@ class PendingRequest extends Component {
                 this.setState({pending_requests: res});
                 var x;
                 var rows = [];
+                var cnt=0;
                 try{
                     console.log("pending_requests in didmount: "+this.state.pending_requests);
                     for (x in this.state.pending_requests)
                     {
+                        cnt++;
                         console.log("Req addr1: "+this.state.pending_requests[x])
                         let current_req_addr = this.state.pending_requests[x];
-                        this.state.contract.methods.getParticularRequest(current_req_addr).call().then(
-                            (request_details) => {
-                                console.log("NAME: "+request_details[1]);
-                                console.log("REQ ADDR: "+current_req_addr);
-                                rows.push(<tr key={current_req_addr}>
-                                    <td>{request_details[1]}</td>
-                                    <td>{current_req_addr}</td>
-                                    <td><AdmitButton/></td>
-                                    <td><DenyButton/></td>
-                                    </tr>);
-                                console.log("row len in loop: "+rows.length);
-                                console.log("rows in loop: "+rows) ;
-                            if (rows.length === this.state.pending_requests.length){
-                                console.log("going to return rows..row len: "+rows.length);
-                                this.setState({element:<tbody>{rows}</tbody>});
+                        if (current_req_addr != "0x0000000000000000000000000000000000000000"){
+                            this.state.contract.methods.getParticularRequest(current_req_addr).call().then(
+                                (request_details) => {
+                                    console.log("NAME: "+request_details[1]);
+                                    console.log("REQ ADDR: "+current_req_addr);
+                                    rows.push(<tr key={current_req_addr}>
+                                        <td>{request_details[1]}</td>
+                                        <td>{current_req_addr}</td>
+                                        <td><AdmitButton
+                                            current_account = {this.state.current_account} 
+                                            contract = {this.state.contract} 
+                                            req_addr={current_req_addr}
+                                        /></td>
+                                        <td><DenyButton
+                                            current_account = {this.state.current_account} 
+                                            contract = {this.state.contract} 
+                                            req_addr={current_req_addr}
+                                        /></td>
+                                        </tr>);
+                                    console.log("row len in loop: "+rows.length);
+                                    console.log("rows in loop: "+rows) ;
+                                if (cnt === this.state.pending_requests.length){
+                                    console.log("going to return rows..row len: "+rows.length);
+                                    this.setState({element:<tbody>{rows}</tbody>});
+                                }
                             }
+                            ); 
                         }
-                        );                                              
+                                                                     
                     }
                 }
                 catch(error){
@@ -64,7 +75,7 @@ class PendingRequest extends Component {
     }
         
         
-    loadPendingRequests = async() => {
+    /*loadPendingRequests = async() => {
         console.log("in lpr start");
         console.log("contract obj: "+this.state.contract);
         const { current_account, contract } = this.state;
@@ -80,7 +91,7 @@ class PendingRequest extends Component {
 
     }
 
-   /* mapRequests = () => {
+   mapRequests = () => {
         this.displayRequests();
             return(<tr>
             <td>{request_details[1]}</td>

@@ -1,6 +1,6 @@
 import React,{Component} from 'react'; 
   
-class FileUpload extends Component { 
+class VerifyCert extends Component { 
    
     state = {   
       // Initially, no file is selected 
@@ -34,39 +34,13 @@ class FileUpload extends Component {
       //axios.post("api/uploadfile", formData); 
     }; 
      
-    // File content to be displayed after 
-    // file upload is complete 
-    fileData = () => { 
-     
-      if (this.state.selectedFile) { 
-          
-        return ( 
-          <div> 
-            <h2>File Details:</h2> 
-            <p>File Name: {this.state.selectedFile.name}</p> 
-            <p>File Type: {this.state.selectedFile.type}</p> 
-            <p> 
-              Last Modified:{" "} 
-              {this.state.selectedFile.lastModifiedDate.toDateString()} 
-            </p> 
-          </div> 
-        ); 
-      } else { 
-        return ( 
-          <div> 
-            <br /> 
-            <h4>Choose before Pressing the Upload button</h4> 
-          </div> 
-        ); 
-      } 
-    }; 
      
     render() { 
      
       return ( 
         <div> 
             <div className="card col-12 col-lg-6 reg-card">
-                <h2 className="card-header bg-dark text-white">Issue certificate</h2>
+                <h2 className="card-header bg-dark text-white">Verify certificate</h2>
                 <div className="card-body">               
 
                     <form onSubmit={(e) => this.handleSubmit(e)}>   
@@ -79,21 +53,21 @@ class FileUpload extends Component {
                             <input type="text" 
                                                 className="form-control" 
                                                 id="name"  
-                                                placeholder="Recipient public address" 
+                                                placeholder="Transaction ID" 
                                                 required
                             />    
                         </div>  
                     </div>          
 
                     <div className="mb-3">
-                        <input type="file" onChange={this.onFileChange} />
+                        <input type="file" onChange={this.onFileChange} required/>
                     </div> 
                    
                     <button 
                         type="submit" 
                         className="btn btn-primary"
                         onClick={this.onFileUpload}
-                    >Upload</button>
+                    >Verify</button>
                         
                     </form>     
 
@@ -101,11 +75,9 @@ class FileUpload extends Component {
 
             </div>
 
-            {this.fileData()} 
-
             </div>
       ); 
     } 
   } 
   
-  export default FileUpload; 
+  export default VerifyCert; 

@@ -6,7 +6,7 @@ import "./App.css";
 import { Route } from 'react-router-dom'
 import RegistrationControl from './RegistrationControl/RegistrationControl'
 import InstitutionDashBoard from './institutionDash'
-import Header from './Header/Header'
+import EduUserDashBoard from './eduUserDash'
 
 class App extends Component {
   state = { 
@@ -102,13 +102,20 @@ class App extends Component {
       )}/>
        <Route exact path='/institution' render={({ history }) => (
          <InstitutionDashBoard
-            history={history}
             web3 = {this.state.web3} 
             current_account = {this.state.current_account} 
             contract = {this.state.contract} 
-            changeAppState = {this.changeAppState}
          />
       )}/>
+
+      <Route exact path='/eduUser' render={() => (
+              <EduUserDashBoard
+              web3 = {this.state.web3} 
+              current_account = {this.state.current_account} 
+              contract = {this.state.contract} 
+              />
+            )}/>
+
       </div>
     );
   }

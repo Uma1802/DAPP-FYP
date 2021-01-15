@@ -92,12 +92,13 @@ class RegistrationControl extends Component {
 
       loginButtonHandler = async() => {
           var loginFlag = false;
+          var current_account=null;
           try{
-                const web3 = new Web3(Web3.givenProvider);
+                 const web3 = new Web3(Web3.givenProvider);
                 const result = await this.connectMetamaskAccount();
                 if (result !== "NO METAMASK")
                 {
-                    const current_account = web3.utils.toChecksumAddress(result);
+                    current_account = web3.utils.toChecksumAddress(result);
                     console.log("Checksum of logged in account: "+current_account);
 
                     const networkId = await web3.eth.net.getId();
@@ -109,7 +110,7 @@ class RegistrationControl extends Component {
                       );
                     this.setState({ web3, current_account, contract: instance });
                     const loginstatus = await this.checkIfUserExists();
-                    if (loginstatus == "USER EXISTS")
+                    if (loginstatus === "USER EXISTS")
                     {
                         const nonce = "HELLO WORLD NONCE";
                         console.log("Current address: "+current_account);
@@ -118,12 +119,36 @@ class RegistrationControl extends Component {
                         let res = await web3.eth.personal.ecRecover(nonce, signature);
                         const recovered_address = web3.utils.toChecksumAddress(res);
                         console.log("Recovered address: "+recovered_address);
-                        if (current_account == recovered_address){
+                        if (current_account === recovered_address){
                             console.log("Login success");
-                            loginFlag = true;
+                            loginFlag = true; 
+                            if(loginFlag){
+                                const { contract } = this.state;
+                                    let res= await contract.methods.getParticularUser(current_account).call();
+                                    console.log("res is "+res);
+                                    console.log("res[2]: "+res[2]);
+                                    this.props.changeAppState(this.state.web3,this.state.current_account,this.state.contract);                                       
+                                    if(res[2]==2){
+                                        console.log("if1");
+                                        this.props.history.push('/institution')
+                                    }
+                                        
+                                    else if(res[2]==3)
+                                    {
+                                        console.log("if2");
+                                        this.props.history.push('/eduUser')
+                                    }
+                                    else if(res[2]==1)
+                                    {
+                                        console.log("if2");
+                                        this.props.history.push('/institution')
+                                    } 
+                                    
+                            }                           
                         }
                         else{
                             console.log("Login failed");
+                            this.props.changeAppState(this.state.web3,this.state.current_account,this.state.contract);
                         }
                     }
                     else{
@@ -135,8 +160,11 @@ class RegistrationControl extends Component {
                 console.error(error);
             }
             finally{
-                this.props.changeAppState(this.state.web3,this.state.current_account,this.state.contract);
-                this.props.history.push('/institution')
+                
+                if(!loginFlag){
+                    alert("Login failed");
+                }
+                
             }
         
      }
@@ -260,7 +288,6 @@ class RegistrationControl extends Component {
                         id="inputLine"
                         name="institutionName"
                         type='text'
-                        name="institutionName"
                         placeholder='If institution not found, please enter'
                     />
                     </div>

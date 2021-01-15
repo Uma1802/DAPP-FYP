@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import Tabs from './Tabs/Tabs.js'
+import InstitutionTabs from './Tabs/InstitutionTabs.js'
 import Header from './Header/Header.js'
 
 class InstitutionDashBoard extends Component {  
@@ -9,12 +9,9 @@ class InstitutionDashBoard extends Component {
     return(
         <div>
             <Header/>
-            <Tabs
-                history={this.props.history}
-                web3 = {this.props.web3} 
+            <InstitutionTabs
                 current_account = {this.props.current_account} 
-                contract = {this.props.contract} 
-                changeAppState = {this.props.changeAppState}            
+                contract = {this.props.contract}             
             />
         </div>
         
