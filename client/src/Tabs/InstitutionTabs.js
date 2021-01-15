@@ -21,11 +21,8 @@ class InstitutionTabs extends Component {
         <div className="tab-content" id="myTabContent">
             <div className="tab-pane fade show active" id="home" role="tabpanel" aria-labelledby="home-tab">
                 <PendingRequest
-                    history={this.props.history}
-                    web3 = {this.props.web3} 
                     current_account = {this.props.current_account} 
                     contract = {this.props.contract} 
-                    changeAppState = {this.props.changeAppState}
                 />
             </div>
             <div className="tab-pane fade" id="profile" role="tabpanel" aria-labelledby="profile-tab">                

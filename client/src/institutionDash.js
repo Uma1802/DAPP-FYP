@@ -10,12 +10,8 @@ class InstitutionDashBoard extends Component {
         <div>
             <Header/>
             <InstitutionTabs
-
-                history={this.props.history}
-                web3 = {this.props.web3} 
                 current_account = {this.props.current_account} 
-                contract = {this.props.contract} 
-                changeAppState = {this.props.changeAppState}            
+                contract = {this.props.contract}             
             />
         </div>
         

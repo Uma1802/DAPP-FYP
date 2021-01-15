@@ -9,7 +9,6 @@ class PendingRequest extends Component {
 
     state={
         pending_requests:null,
-        web3: this.props.web3, 
         current_account: this.props.current_account, 
         contract: this.props.contract,
         element: null
@@ -17,7 +16,6 @@ class PendingRequest extends Component {
 
     constructor(props){
         super(props);
-        //this.loadPendingRequests();
         console.log("in constructor");
     }
 
@@ -42,8 +40,16 @@ class PendingRequest extends Component {
                                 rows.push(<tr key={current_req_addr}>
                                     <td>{request_details[1]}</td>
                                     <td>{current_req_addr}</td>
-                                    <td><AdmitButton/></td>
-                                    <td><DenyButton/></td>
+                                    <td><AdmitButton
+                                        current_account = {this.state.current_account} 
+                                        contract = {this.state.contract} 
+                                        req_addr={current_req_addr}
+                                    /></td>
+                                    <td><DenyButton
+                                        current_account = {this.state.current_account} 
+                                        contract = {this.state.contract} 
+                                        req_addr={current_req_addr}
+                                    /></td>
                                     </tr>);
                                 console.log("row len in loop: "+rows.length);
                                 console.log("rows in loop: "+rows) ;
@@ -64,7 +70,7 @@ class PendingRequest extends Component {
     }
         
         
-    loadPendingRequests = async() => {
+    /*loadPendingRequests = async() => {
         console.log("in lpr start");
         console.log("contract obj: "+this.state.contract);
         const { current_account, contract } = this.state;
@@ -80,7 +86,7 @@ class PendingRequest extends Component {
 
     }
 
-   /* mapRequests = () => {
+   mapRequests = () => {
         this.displayRequests();
             return(<tr>
             <td>{request_details[1]}</td>
