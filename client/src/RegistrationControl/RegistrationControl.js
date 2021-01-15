@@ -91,6 +91,7 @@ class RegistrationControl extends Component {
       }
 
       loginButtonHandler = async() => {
+          var loginFlag = false;
           try{
                 const web3 = new Web3(Web3.givenProvider);
                 const result = await this.connectMetamaskAccount();
@@ -119,7 +120,7 @@ class RegistrationControl extends Component {
                         console.log("Recovered address: "+recovered_address);
                         if (current_account === recovered_address){
                             console.log("Login success");
-                            this.props.history.push('/institution')
+                            loginFlag = true;
                         }
                         else{
                             console.log("Login failed");
@@ -135,6 +136,7 @@ class RegistrationControl extends Component {
             }
             finally{
                 this.props.changeAppState(this.state.web3,this.state.current_account,this.state.contract);
+                this.props.history.push('/institution')
             }
         
      }

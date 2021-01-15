@@ -6,7 +6,11 @@ import "./App.css";
 import { Route } from 'react-router-dom'
 import RegistrationControl from './RegistrationControl/RegistrationControl'
 import InstitutionDashBoard from './institutionDash'
+<<<<<<< HEAD
 import EduUserDashBoard from './eduUserDash'
+=======
+import Header from './Header/Header'
+>>>>>>> a9eeba47d927d122719384d08b553e9ac5a3bcf7
 
 class App extends Component {
   state = { 
@@ -67,6 +71,7 @@ class App extends Component {
   };
   changeAppState = (web3, current_account, contract) =>{
     this.setState({web3, current_account, contract})
+    console.log("Inside app.js- contract obj : "+this.state.contract);
   }
 
   render() {
@@ -88,7 +93,7 @@ class App extends Component {
         <div>The stored value is: {this.state.storageValue}</div>
       </div>*/
       <div>
-       <Route exact path='/institution' render={({ history }) => ( 
+       <Route exact path='/' render={({ history }) => ( 
          
           <RegistrationControl 
               history={history}
@@ -99,9 +104,14 @@ class App extends Component {
           /> 
           
       )}/>
-
-       <Route exact path='/' render={() => (
-         <InstitutionDashBoard/>
+       <Route exact path='/institution' render={({ history }) => (
+         <InstitutionDashBoard
+            history={history}
+            web3 = {this.state.web3} 
+            current_account = {this.state.current_account} 
+            contract = {this.state.contract} 
+            changeAppState = {this.changeAppState}
+         />
       )}/>
 
       <Route exact path='/eduUser' render={() => (

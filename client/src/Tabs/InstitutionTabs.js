@@ -6,7 +6,7 @@ import CertIssue from '../CertIssue.js';
 class InstitutionTabs extends Component {  
 
     render(){
-
+        console.log("Inside Tabs- contract obj: "+this.props.contract);
     return(
 
       <div className="container tabs">        
@@ -20,7 +20,13 @@ class InstitutionTabs extends Component {
         </ul>
         <div className="tab-content" id="myTabContent">
             <div className="tab-pane fade show active" id="home" role="tabpanel" aria-labelledby="home-tab">
-                <PendingRequest/>
+                <PendingRequest
+                    history={this.props.history}
+                    web3 = {this.props.web3} 
+                    current_account = {this.props.current_account} 
+                    contract = {this.props.contract} 
+                    changeAppState = {this.props.changeAppState}
+                />
             </div>
             <div className="tab-pane fade" id="profile" role="tabpanel" aria-labelledby="profile-tab">                
                 <CertIssue/>
