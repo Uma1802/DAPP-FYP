@@ -1,19 +1,19 @@
 import React, { Component } from 'react';
-import InstitutionTabs from './Tabs/InstitutionTabs.js'
+import EduUserTabs from './Tabs/EduUserTabs.js'
 import Header from './Header/Header.js'
 
-class InstitutionDashBoard extends Component {  
+class EduUserDashBoard extends Component {  
      
     render(){
 
     return(
         <div>
             <Header/>
-            <InstitutionTabs/>
+            <EduUserTabs/>
         </div>
         
     )
     }
 }
 
-export default InstitutionDashBoard;
+export default EduUserDashBoard;

@@ -6,7 +6,7 @@ import "./App.css";
 import { Route } from 'react-router-dom'
 import RegistrationControl from './RegistrationControl/RegistrationControl'
 import InstitutionDashBoard from './institutionDash'
-import Header from './Header'
+import EduUserDashBoard from './eduUserDash'
 
 class App extends Component {
   state = { 
@@ -88,7 +88,7 @@ class App extends Component {
         <div>The stored value is: {this.state.storageValue}</div>
       </div>*/
       <div>
-       <Route exact path='/' render={({ history }) => ( 
+       <Route exact path='/institution' render={({ history }) => ( 
          
           <RegistrationControl 
               history={history}
@@ -99,9 +99,15 @@ class App extends Component {
           /> 
           
       )}/>
-       <Route exact path='/institution' render={() => (
+
+       <Route exact path='/' render={() => (
          <InstitutionDashBoard/>
       )}/>
+
+      <Route exact path='/eduUser' render={() => (
+              <EduUserDashBoard/>
+            )}/>
+
       </div>
     );
   }

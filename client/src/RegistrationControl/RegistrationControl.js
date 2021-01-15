@@ -108,7 +108,7 @@ class RegistrationControl extends Component {
                       );
                     this.setState({ web3, current_account, contract: instance });
                     const loginstatus = await this.checkIfUserExists();
-                    if (loginstatus == "USER EXISTS")
+                    if (loginstatus === "USER EXISTS")
                     {
                         const nonce = "HELLO WORLD NONCE";
                         console.log("Current address: "+current_account);
@@ -117,7 +117,7 @@ class RegistrationControl extends Component {
                         let res = await web3.eth.personal.ecRecover(nonce, signature);
                         const recovered_address = web3.utils.toChecksumAddress(res);
                         console.log("Recovered address: "+recovered_address);
-                        if (current_account == recovered_address){
+                        if (current_account === recovered_address){
                             console.log("Login success");
                             this.props.history.push('/institution')
                         }
@@ -258,7 +258,6 @@ class RegistrationControl extends Component {
                         id="inputLine"
                         name="institutionName"
                         type='text'
-                        name="institutionName"
                         placeholder='If institution not found, please enter'
                     />
                     </div>
