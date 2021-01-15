@@ -6,7 +6,7 @@ import "./App.css";
 import { Route } from 'react-router-dom'
 import RegistrationControl from './RegistrationControl/RegistrationControl'
 import InstitutionDashBoard from './institutionDash'
-import Header from './Header'
+import Header from './Header/Header'
 
 class App extends Component {
   state = { 
@@ -67,6 +67,7 @@ class App extends Component {
   };
   changeAppState = (web3, current_account, contract) =>{
     this.setState({web3, current_account, contract})
+    console.log("Inside app.js- contract obj : "+this.state.contract);
   }
 
   render() {
@@ -99,8 +100,14 @@ class App extends Component {
           /> 
           
       )}/>
-       <Route exact path='/institution' render={() => (
-         <InstitutionDashBoard/>
+       <Route exact path='/institution' render={({ history }) => (
+         <InstitutionDashBoard
+            history={history}
+            web3 = {this.state.web3} 
+            current_account = {this.state.current_account} 
+            contract = {this.state.contract} 
+            changeAppState = {this.changeAppState}
+         />
       )}/>
       </div>
     );
