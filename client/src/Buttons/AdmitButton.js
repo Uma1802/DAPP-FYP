@@ -1,7 +1,6 @@
 import React, { Component } from 'react';
 
 class AdmitButton extends Component {  
-
     render(){
 
     return(
