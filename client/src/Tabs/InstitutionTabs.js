@@ -26,7 +26,11 @@ class InstitutionTabs extends Component {
                 />
             </div>
             <div className="tab-pane fade" id="profile" role="tabpanel" aria-labelledby="profile-tab">                
-                <CertIssue/>
+                <CertIssue
+                    web3 = {this.props.web3}
+                    current_account = {this.props.current_account} 
+                    contract = {this.props.contract}
+                />
             </div>
         </div>
     </div>

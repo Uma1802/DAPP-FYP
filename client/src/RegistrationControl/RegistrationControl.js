@@ -112,7 +112,11 @@ class RegistrationControl extends Component {
                     const loginstatus = await this.checkIfUserExists();
                     if (loginstatus === "USER EXISTS")
                     {
-                        const nonce = "HELLO WORLD NONCE";
+                        //const nonce = "HELLO WORLD NONCE";
+                        var min = 1000;
+                        var max = 2000;
+                        var nonce =  min + (Math.random() * (max-min));
+                        nonce+=""+nonce;
                         console.log("Current address: "+current_account);
                         const signature = await web3.eth.personal.sign(nonce, current_account);
                         console.log("Signature: "+signature);

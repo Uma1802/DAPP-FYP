@@ -56,15 +56,19 @@ class PendingRequest extends Component {
                                         </tr>);
                                     console.log("row len in loop: "+rows.length);
                                     console.log("rows in loop: "+rows) ;
-                                if (cnt === this.state.pending_requests.length){
+                                if (cnt == this.state.pending_requests.length){
                                     console.log("going to return rows..row len: "+rows.length);
-                                    this.setState({element:<tbody>{rows}</tbody>});
+                                    this.setState({element:<tbody>{rows}</tbody>});                                   
                                 }
                             }
                             ); 
                         }
                                                                      
                     }
+                    if (rows.length == 0){
+                        console.log("no rows");
+                        this.setState({element:<tbody><h2>No Pending Requests!</h2></tbody>});
+                    } 
                 }
                 catch(error){
                     console.error(error);
@@ -114,7 +118,7 @@ class PendingRequest extends Component {
         }      
     }*/
 
-    display = async() => {
+    /*display = async() => {
         var x;
         var rows = [];
         try{
@@ -164,11 +168,12 @@ class PendingRequest extends Component {
             </tr>);
     }
     displaytest = () => {
-       /* this.display().then( (element) => {
+        this.display().then( (element) => {
             console.log("element type: "+typeof(element));
             return element;
         }            
-        );*/
+        );
+        
 
 
         var x;
@@ -202,7 +207,7 @@ class PendingRequest extends Component {
             console.error(error);
         }
         
-    }
+    }*/
     render(){
         console.log("in render");
         var x;

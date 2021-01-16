@@ -4,8 +4,11 @@ import jsSHA from "jssha";
 class CertIssue extends Component { 
    
     state = {   
-      // Initially, no file is selected 
-      selectedFile: null
+      // Initially, no file is selected
+      current_account: this.props.current_account, 
+      contract: this.props.contract, 
+      selectedFile: null,
+      web3: this.props.web3
     }; 
      
     // On file select (from the pop up) 
@@ -19,12 +22,16 @@ class CertIssue extends Component {
       
 
     }; 
+
+    onChange = (e) => {
+      this.setState({[e.target.name]: e.target.value});
+    }
      
     // On file upload (click the upload button) 
     onFileUpload = (event) => { 
 
       event.preventDefault();
-     
+      const web3 = this.state.web3;
       // Create an object of formData 
       const formData = new FormData(); 
      
@@ -40,13 +47,24 @@ class CertIssue extends Component {
 
 
     var reader = new FileReader();
-    reader.onload = function(evt) {
+    reader.onload = (evt) => {
       if (evt.target.readyState == FileReader.DONE) { // DONE == 2
         console.log(evt.target.result);
         const shaObj = new jsSHA("SHA-256", "ARRAYBUFFER");
         shaObj.update(evt.target.result);
         var hash = shaObj.getHash("HEX");
         console.log("hash is "+hash);
+        console.log("curr acc: "+this.state.current_account);
+
+        web3.eth.sendTransaction({
+          from: this.state.current_account,
+          to: this.state.receiver_addr,
+          data: web3.utils.toHex("hash"),
+          value: '0'
+      })
+      .then((receipt) => {
+                  console.log("tx receipt: "+receipt);
+      });
 
       //var bytes = new Uint8Array(evt.target.result);
       //const shaObj2 = new jsSHA("SHA-256", "UINT8ARRAY");
@@ -105,6 +123,8 @@ class CertIssue extends Component {
                                                 className="form-control" 
                                                 id="name"  
                                                 placeholder="Recipient unique ID" 
+                                                onChange={this.onChange}
+                                                name = "receiver_addr"
                                                 
                             />    
                         </div>  
