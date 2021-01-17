@@ -9,7 +9,11 @@ class EduUserDashBoard extends Component {
     return(
         <div>
             <Header/>
-            <EduUserTabs/>
+            <EduUserTabs
+            web3 = {this.props.web3}
+            current_account = {this.props.current_account} 
+            contract = {this.props.contract}  
+            certificate_contract = {this.props.certificate_contract}/>
         </div>
         
     )

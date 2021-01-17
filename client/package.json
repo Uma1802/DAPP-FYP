@@ -4,6 +4,7 @@
   "private": true,
   "dependencies": {
     "crypto-js": "^4.0.0",
+    "ethereumjs-tx": "^2.1.2",
     "form-serialize": "^0.7.2",
     "jssha": "^3.2.0",
     "react": "16.11.0",

@@ -4,6 +4,48 @@ import ExportButton from './Buttons/ExportButton';
 
 class ExportCert extends Component {  
 
+    state={
+        pending_requests:null,
+        current_account: this.props.current_account, 
+        contract: this.props.contract,
+        certificate_contract: this.props.certificate_contract,
+        element: null,
+    };
+
+    componentDidMount(){
+        var rows =[];
+        var indices = [];
+        const { current_account, certificate_contract } = this.state;
+        certificate_contract.methods.getCertificateCount().call().then((count) => {
+            //var i;
+            console.log("count: "+count);
+            for (let j=0;j<count;j++)
+                indices.push(j);
+            for (let i in indices) {
+                console.log("i val:"+i);
+                certificate_contract.methods.getParticularCertificate(i).call().then((certificate_details) => {
+                    console.log("certi dets: id="+i+" rcpaddr="+certificate_details[0]+" certi hash="+certificate_details[1]);
+                    if (certificate_details[0] == current_account){
+                        console.log("rcp addr matched");
+                        rows.push(<tr key={10000+i}>
+                            <td>{10000+i}</td>
+                            </tr>);
+                        console.log("rows length: "+rows);
+                    }
+                    if (i == (count-1))
+                    {
+                        console.log("rows length end: "+rows);
+                        if (rows.length == 0)
+                        this.setState({element:<tbody><h3>No Certificates Received!</h3></tbody>});
+                        else
+                        this.setState({element:<tbody>{rows}</tbody>});
+                    }
+                });
+            }
+            
+        });                                   
+        }
+
     render(){
 
     return(
@@ -14,28 +56,13 @@ class ExportCert extends Component {
                             <table className="table table-striped">
                                 <thead className="thead-dark">
                                     <tr>
-                                        <th>Transaction ID</th>
+                                        <th>Certificate ID</th>
                                         <th>&nbsp;</th>
                                     </tr>
                                 </thead>
-                                <tbody>
-                                    <tr>
-                                        <td>ABCDE345679</td>
-                                        <td><ExportButton/></td>
-                                    </tr>
-                                    <tr>
-                                        <td>EF89CDE5679</td>
-                                        <td><ExportButton/></td>
-                                    </tr>
-                                    <tr>
-                                        <td>ABCDE345679</td>
-                                        <td><ExportButton/></td>
-                                    </tr>
-                                    <tr>
-                                        <td>DE1947CF508</td>
-                                        <td><ExportButton/></td>
-                                    </tr>
-                                </tbody>
+                                {                                 
+                                        this.state.element
+                                    }
                             </table>
                         </div>
                     </div>

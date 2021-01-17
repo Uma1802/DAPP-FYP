@@ -20,10 +20,18 @@ class EduUserTabs extends Component {
         </ul>
         <div className="tab-content" id="myTabContent">
             <div className="tab-pane fade show active" id="home" role="tabpanel" aria-labelledby="home-tab">                
-                <ExportCert/>
+                <ExportCert
+                web3 = {this.props.web3}
+                current_account = {this.props.current_account} 
+                contract = {this.props.contract}  
+                certificate_contract = {this.props.certificate_contract}/>
             </div>
             <div className="tab-pane fade" id="profile" role="tabpanel" aria-labelledby="profile-tab">
-                <VerifyCert/>
+                <VerifyCert
+                web3 = {this.props.web3}
+                current_account = {this.props.current_account} 
+                contract = {this.props.contract}  
+                certificate_contract = {this.props.certificate_contract}/>
             </div>
             
         </div>

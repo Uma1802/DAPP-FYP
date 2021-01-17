@@ -9,3 +9,9 @@ var Participants = artifacts.require("./Participants.sol");
 module.exports = function(deployer) {
   deployer.deploy(Participants);
 };
+
+var Certificates = artifacts.require("./Certificates.sol");
+
+module.exports = function(deployer) {
+  deployer.deploy(Certificates, Participants.address);
+};

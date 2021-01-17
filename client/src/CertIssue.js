@@ -8,7 +8,9 @@ class CertIssue extends Component {
       current_account: this.props.current_account, 
       contract: this.props.contract, 
       selectedFile: null,
-      web3: this.props.web3
+      web3: this.props.web3,
+      certificate_contract: this.props.certificate_contract,
+      receiver_addr: ""
     }; 
      
     // On file select (from the pop up) 
@@ -56,7 +58,7 @@ class CertIssue extends Component {
         console.log("hash is "+hash);
         console.log("curr acc: "+this.state.current_account);
 
-        web3.eth.sendTransaction({
+      /*  web3.eth.sendTransaction({
           from: this.state.current_account,
           to: this.state.receiver_addr,
           data: web3.utils.toHex("hash"),
@@ -64,7 +66,40 @@ class CertIssue extends Component {
       })
       .then((receipt) => {
                   console.log("tx receipt: "+receipt);
-      });
+      });*/
+      var msg=null;
+      try{
+        console.log("certi contract in props: "+this.props.certificate_contract);
+        console.log("certi contract in state: "+this.state.certificate_contract);
+
+        const { certificate_contract } = this.state;  
+        certificate_contract.methods.createCertificate(this.state.receiver_addr,
+          hash,
+          "").send({ from: this.state.current_account }).then(() => {
+            alert("Certificate issued!");
+          });
+      }
+      catch(error){
+        console.error(error);
+        msg = error.message;
+        console.log("error msg: "+msg);
+        if (msg.includes("User does not exist in the system"))
+        {
+          alert("Recipient user does not exist in the system");
+        }
+      }
+      finally{
+        if (msg !== null)
+        {
+          console.log("error msg1: "+msg);
+          if (msg.includes("User does not exist in the system"))
+          {
+            alert("Recipient user does not exist in the system");
+          } 
+        }
+      }
+        
+      
 
       //var bytes = new Uint8Array(evt.target.result);
       //const shaObj2 = new jsSHA("SHA-256", "UINT8ARRAY");

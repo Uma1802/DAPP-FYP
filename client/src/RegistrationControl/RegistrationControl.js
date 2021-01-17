@@ -5,6 +5,7 @@ import serializeForm from 'form-serialize';
 import Web3 from 'web3';
 import Participants from "../contracts/Participants.json";
 import getWeb3 from "../getWeb3";
+import Certificates from "../contracts/Certificates.json";
 
 class RegistrationControl extends Component {  
     
@@ -14,12 +15,13 @@ class RegistrationControl extends Component {
         userType:"",
         web3: null, 
         current_account: null, 
-        contract: null
+        contract: null,
+        certificate_contract: null
     };
 
     constructor(props){
         super(props);
-        this.setState({web3: this.props.web3, current_account: this.props.current_account, contract: this.props.contract});
+        this.setState({web3: this.props.web3, current_account: this.props.current_account, contract: this.props.contract, certificate_contract: this.props.certificate_contract});
     }
 
     onChange = (e) => {
@@ -50,7 +52,45 @@ class RegistrationControl extends Component {
                     Participants.abi,
                     deployedNetwork && deployedNetwork.address,
                     );
-                this.setState({ current_account, contract: instance });
+                const deployedNetwork1 = Certificates.networks[networkId];
+                const instance1 = new web3.eth.Contract(
+                        Certificates.abi,
+                        deployedNetwork1 && deployedNetwork1.address,
+                        );
+                console.log("Participants sol address: "+instance.options.address);  
+                console.log("Certificates sol address: "+instance1.options.address);
+                
+                /*console.log("Participants sol address: "+instance.options.address);
+
+
+
+                    let abi = Certificates.abi;
+                    let bytecode = Certificates.bytecode;
+                
+                    let deploy_contract = new web3.eth.Contract(JSON.parse(abi));
+                    let account = '0x7CCb5e94bFFBBEa86035324cb636C0E0ec3500d6';
+                
+                    let payload = {
+                      data: bytecode
+                    }
+                
+                    let parameter = {
+                      from: account,
+                      gas: web3.utils.toHex(800000),
+                      gasPrice: web3.utils.toHex(web3.utils.toWei('30', 'gwei'))
+                      }
+                
+                      deploy_contract.deploy(payload).send(parameter, (err, transactionHash) => {
+                        console.log('Transaction Hash :', transactionHash);
+                    }).on('confirmation', () => {}).then((certificate_contract) => {
+                        console.log('Deployed Contract Address : ', certificate_contract.options.address);
+                    })*/
+
+
+
+
+
+                this.setState({ current_account, contract: instance, certificate_contract: instance1 });
                 const { contract } = this.state;
                 const values = serializeForm(e.target, { hash: true })
                 console.log("submit"+values);
@@ -108,7 +148,48 @@ class RegistrationControl extends Component {
                         Participants.abi,
                         deployedNetwork && deployedNetwork.address,
                       );
-                    this.setState({ web3, current_account, contract: instance });
+                    const deployedNetwork1 = Certificates.networks[networkId];
+                    const instance1 = new web3.eth.Contract(
+                              Certificates.abi,
+                              deployedNetwork1 && deployedNetwork1.address,
+                              );
+                      console.log("Participants sol address: "+instance.options.address);  
+                      console.log("Certificates sol address: "+instance1.options.address);
+
+
+
+                   /*   console.log("Participants sol address: "+instance.options.address);
+
+
+
+                    let abi = Certificates.abi;
+                    let bytecode = Certificates.bytecode;
+                    
+                    let deploy_contract = new web3.eth.Contract((abi));
+                    let account = '0x7CCb5e94bFFBBEa86035324cb636C0E0ec3500d6';
+                   // bytecode += web3.eth.abi.encodeParameter('address', instance.options.address);
+                   // console.log("encooded param: "+web3.eth.abi.encodeParameter('address', instance.options.address));
+                    let payload = {
+                      data: bytecode
+                    }
+                
+                    let parameter = {
+                      from: account,
+                      gas: web3.utils.toHex(800000),
+                      gasPrice: web3.utils.toHex(web3.utils.toWei('30', 'gwei')),
+                      }
+                
+                      deploy_contract.deploy(payload,instance.options.address).send(parameter, (err, transactionHash) => {
+                        console.log('Transaction Hash :', transactionHash);
+                    }).on('confirmation', () => {}).then((certificate_contract) => {
+                        console.log('Deployed Contract Address : ', certificate_contract.options.address);
+                    })*/
+
+
+
+
+
+                    this.setState({ web3, current_account, contract: instance, certificate_contract: instance1});
                     const loginstatus = await this.checkIfUserExists();
                     if (loginstatus === "USER EXISTS")
                     {
@@ -141,7 +222,7 @@ class RegistrationControl extends Component {
                                     let res= await contract.methods.getParticularUser(current_account).call();
                                     console.log("res is "+res);
                                     console.log("res[2]: "+res[2]);
-                                    this.props.changeAppState(this.state.web3,this.state.current_account,this.state.contract);                                       
+                                    this.props.changeAppState(this.state.web3,this.state.current_account,this.state.contract,this.state.certificate_contract);
                                     if(res[2]==2){
                                         console.log("if1");
                                         this.props.history.push('/institution')
@@ -162,7 +243,7 @@ class RegistrationControl extends Component {
                         }
                         else{
                             console.log("Login failed");
-                            this.props.changeAppState(this.state.web3,this.state.current_account,this.state.contract);
+                            this.props.changeAppState(this.state.web3,this.state.current_account,this.state.contract,this.state.certificate_contract);
                         }
                     }
                     else{

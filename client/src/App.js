@@ -1,7 +1,10 @@
 import React, { Component } from "react";
 import SimpleStorageContract from "./contracts/SimpleStorage.json";
 import Participants from "./contracts/Participants.json";
+import Certificates from "./contracts/Certificates.json";
+import Transaction from "ethereumjs-tx";
 import getWeb3 from "./getWeb3";
+import Web3 from 'web3';
 import "./App.css";
 import { Route } from 'react-router-dom'
 import RegistrationControl from './RegistrationControl/RegistrationControl'
@@ -12,62 +15,40 @@ class App extends Component {
   state = { 
           web3: null, 
           current_account: null, 
-          contract: null 
+          contract: null,
+          certificate_contract: null
           };
 
-  /*componentDidMount = async () => {
-    try {
-      // Get network provider and web3 instance.
-      const web3 = await getWeb3();
 
-      // Use web3 to get the user's accounts.
-      const accounts = await web3.eth.getAccounts();
 
-      // Get the contract instance.
-      const networkId = await web3.eth.net.getId();
-      console.log("network id: "+networkId);
-      const deployedNetwork = SimpleStorageContract.networks[networkId];
-      console.log("deployed network: "+deployedNetwork);
-      const instance = new web3.eth.Contract(
-        SimpleStorageContract.abi,
-        deployedNetwork && deployedNetwork.address,
-      );
+  /*componentDidMount(){
+    let abi = Certificates.abi;
+    let bytecode = Certificates.bytecode;
 
-      // Set web3, accounts, and contract to the state, and then proceed with an
-      // example of interacting with the contract's methods.
-      this.setState({ web3, accounts, contract: instance }, this.runExample);
-    } catch (error) {
-      // Catch any errors for any of the above operations.
-      alert(
-        `Failed to load web3, accounts, or contract. Check console for details.`,
-      );
-      console.error(error);
+    let deploy_contract = new web3.eth.Contract(JSON.parse(abi));
+    let account = '0x7CCb5e94bFFBBEa86035324cb636C0E0ec3500d6';
+
+    let payload = {
+      data: bytecode
     }
-  };*/
 
-  runExample = async () => {
-    try{
-      const { accounts, contract } = this.state;
+    let parameter = {
+      from: account,
+      gas: web3.utils.toHex(800000),
+      gasPrice: web3.utils.toHex(web3.utils.toWei('30', 'gwei'))
+      }
 
-      // Stores a given value, 5 by default.
-      await contract.methods.set(50).send({ from: accounts[0] });
-
-      // Get the value from the contract to prove it worked.
-      const response = await contract.methods.get().call();
-
-      // Update state with the result.
-      this.setState({ storageValue: response });
-      alert("Value from contract: "+this.state.storageValue);
-      console.log("Value from contract: "+this.state.storageValue);
-    }
-    catch (error){
-      console.error(error);
-    }
+      deploy_contract.deploy(payload).send(parameter, (err, transactionHash) => {
+        console.log('Transaction Hash :', transactionHash);
+    }).on('confirmation', () => {}).then((certificate_contract) => {
+        console.log('Deployed Contract Address : ', certificate_contract.options.address);
+    })
     
-  };
-  changeAppState = (web3, current_account, contract) =>{
-    this.setState({web3, current_account, contract})
-    console.log("Inside app.js- contract obj : "+this.state.contract);
+    
+  }*/
+  changeAppState = (web3, current_account, contract, certificate_contract) =>{
+    this.setState({web3, current_account, contract, certificate_contract})
+    console.log("Inside app.js- certi contract obj : "+this.state.certificate_contract);
   }
 
   render() {
@@ -97,6 +78,7 @@ class App extends Component {
               current_account = {this.state.current_account} 
               contract = {this.state.contract} 
               changeAppState = {this.changeAppState}
+              certificate_contract = {this.state.certificate_contract}
           /> 
           
       )}/>
@@ -105,6 +87,7 @@ class App extends Component {
             web3 = {this.state.web3} 
             current_account = {this.state.current_account} 
             contract = {this.state.contract} 
+            certificate_contract = {this.state.certificate_contract}
          />
       )}/>
 
@@ -113,6 +96,7 @@ class App extends Component {
               web3 = {this.state.web3} 
               current_account = {this.state.current_account} 
               contract = {this.state.contract} 
+              certificate_contract = {this.state.certificate_contract}
               />
             )}/>
 

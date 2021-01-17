@@ -12,7 +12,8 @@ class InstitutionDashBoard extends Component {
             <InstitutionTabs
                 web3 = {this.props.web3}
                 current_account = {this.props.current_account} 
-                contract = {this.props.contract}             
+                contract = {this.props.contract}  
+                certificate_contract = {this.props.certificate_contract}           
             />
         </div>
         
