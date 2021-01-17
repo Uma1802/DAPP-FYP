@@ -118,9 +118,19 @@ class RegistrationControl extends Component {
                         var nonce =  min + (Math.random() * (max-min));
                         nonce+=""+nonce;
                         console.log("Current address: "+current_account);
-                        const signature = await web3.eth.personal.sign(nonce, current_account);
-                        console.log("Signature: "+signature);
-                        let res = await web3.eth.personal.ecRecover(nonce, signature);
+                        try{
+                            var signature = await web3.eth.personal.sign(nonce, current_account);
+                            console.log("Signature: "+signature);
+                        }
+                        catch(error){
+                            console.log("inside sign catch");
+                            console.error(error);
+                            console.log("end of sign catch");
+                        }
+                        
+                       
+                        try{var res = await web3.eth.personal.ecRecover(nonce, signature);}
+                        catch(err){ console.log("inside ecrover cstch"); console.error(err); console.log("end of ecrecover catch");}
                         const recovered_address = web3.utils.toChecksumAddress(res);
                         console.log("Recovered address: "+recovered_address);
                         if (current_account === recovered_address){
@@ -161,12 +171,14 @@ class RegistrationControl extends Component {
                 }
             }
             catch (error){
+                console.log("inside last catch of loginhandler");
                 console.error(error);
+                console.log("end of last catch of loginhandler");
             }
             finally{
                 
                 if(!loginFlag){
-                    alert("Login failed");
+                    alert("Login failed!");
                 }
                 
             }
@@ -188,7 +200,9 @@ class RegistrationControl extends Component {
             }
          }
          catch(error){
-             console.error(error);
+            console.log("inside last catch of checkuser");
+            console.error(error);
+            console.log("end of last catch of checkuser");
          }
          finally{
              return result;
@@ -209,7 +223,9 @@ class RegistrationControl extends Component {
             }
          }
          catch (error){
+             console.log("inside connect catch");
             console.log(error);
+            console.log("end of connect catch");
          }
          finally{
             return result;      

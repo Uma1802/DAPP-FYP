@@ -7,11 +7,17 @@ class AdmitButton extends Component {
         const { current_account, contract, req_addr } = this.props;       
           
         try{
-            await contract.methods.approveRequest(req_addr).send({ from: current_account });            
+            contract.methods.approveRequest(req_addr).send({ from: current_account }).then(() => {
+                console.log("request approved");
+                this.props.deleteRequestRow(req_addr);
+            });            
         }
         catch(error){
             console.error("error in admit "+error);
         }   
+        finally{
+            
+        }
    }
 
     render(){

@@ -7,11 +7,17 @@ class DenyButton extends Component {
         const { current_account, contract, req_addr } = this.props;       
           
         try{
-            await contract.methods.declineRequest(req_addr).send({ from: current_account });            
+            contract.methods.declineRequest(req_addr).send({ from: current_account }).then(() => {
+                console.log("request denied");
+                this.props.deleteRequestRow(req_addr);
+            });            
         }
         catch(error){
             console.error("error in deny "+error);
-        }   
+        } 
+        finally{
+            
+        }  
    }
 
     render(){
