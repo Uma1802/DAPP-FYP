@@ -118,6 +118,7 @@ class RegistrationControl extends Component {
                 res = await contract.methods.getPendingRequest().call();
                 console.log("new requests list: "+res);
                 console.log("new requests list size: "+res.length);
+                alert("Registration request sent!");
             }
             else{
                 alert("Please install metamask!");

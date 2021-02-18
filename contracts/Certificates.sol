@@ -42,9 +42,7 @@ contract Certificates {
     function createCertificate(address _recipientAddr, string memory _certificateHash, string memory _ipfsHash) public
     {
         require(participants.checkIfUserExists(_recipientAddr)==true , "User does not exist in the system");
-        require(participants.getParticularUsersType(msg.sender)==2 && 
-        (keccak256(abi.encodePacked(participants.getParticularUsersInstitution(msg.sender))) == keccak256(abi.encodePacked(participants.getParticularUsersInstitution(_recipientAddr)))),
-        "Permission denied");
+        require(participants.getParticularUsersType(msg.sender)==2, "Permission denied");
         certificatesList[certificatesCount++] = Certificate(certificatesCount,_recipientAddr, _certificateHash, _ipfsHash,true);
         emit certificateCreationEvent(certificatesCount,_recipientAddr, _certificateHash, _ipfsHash);
     }
