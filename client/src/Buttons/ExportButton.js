@@ -21,7 +21,7 @@ class ExportButton extends Component {
            })
  
          const  chunks = []
-         for await (const chunk of node.cat(ipfsHash)) {
+         for await (const chunk of node.cat("/ipfs/"+ipfsHash)) {
              //console.log(chunk)
              chunks.push(chunk)
          } 
@@ -43,7 +43,7 @@ class ExportButton extends Component {
         const { current_account, ipfsHash } = this.props;       
           
         try{
-            downloadFileFromIPFS(ipfsHash)           
+            this.downloadFileFromIPFS(ipfsHash)           
         }
         catch(error){
             console.error("error in export "+error);
