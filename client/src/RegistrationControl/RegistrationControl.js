@@ -28,9 +28,9 @@ class RegistrationControl extends Component {
         this.setState({[e.target.name]: e.target.value});
       }
 
-    updateName = (value) =>{
+    /*updateName = (value) =>{
         this.setState({userName: value});
-    }    
+    }*/    
 
     componentDidMount(){
         const web3 = new Web3(Web3.givenProvider);
