@@ -5,7 +5,6 @@ import ExportButton from './Buttons/ExportButton';
 class ExportCert extends Component {  
 
     state={
-        pending_requests:null,
         current_account: this.props.current_account, 
         contract: this.props.contract,
         certificate_contract: this.props.certificate_contract,
@@ -24,11 +23,15 @@ class ExportCert extends Component {
             for (let i in indices) {
                 console.log("i val:"+i);
                 certificate_contract.methods.getParticularCertificate(i).call().then((certificate_details) => {
-                    console.log("certi dets: id="+i+" rcpaddr="+certificate_details[0]+" certi hash="+certificate_details[1]);
+                    console.log("certi dets: id="+i+" rcpaddr="+certificate_details[0]+" certi hash="+certificate_details[1]+" ipfs hash "+certificate_details[2] );
                     if (certificate_details[0] == current_account){
                         console.log("rcp addr matched");
                         rows.push(<tr key={10000+i}>
                             <td>{10000+i}</td>
+                            <td> <ExportButton 
+                                            current_account = {this.state.current_account} 
+                                            ipfsHash= {certificate_details[2]}
+                                            /> </td>
                             </tr>);
                         console.log("rows length: "+rows);
                     }

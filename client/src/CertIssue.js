@@ -1,5 +1,7 @@
 import React,{Component} from 'react'; 
 import jsSHA from "jssha";
+import ipfs from './utils/ipfs'
+
   
 class CertIssue extends Component { 
    
@@ -23,6 +25,44 @@ class CertIssue extends Component {
       this.setState({[e.target.name]: e.target.value});
     }
      
+    async uploadFileToIPFS ( ) {
+
+      console.log("file to upload "+  this.state.selectedFile);
+      console.log("ipfs is "+ipfs)
+
+      /*ipfs.id()
+      .then(res => {
+        console.log(`Daemon active\nID: ${res.id}`)
+      })
+      .catch(err => {
+        console.error(err)
+      })*/
+
+      /*
+     // await ipfs.add(fileToUpload).then(file =>  console.log("in add file "+file)).catch(err => alert( err))
+      //console.log("in add file "+file)
+    */
+
+     var addedFile = null;
+
+      try {
+        addedFile = await ipfs.add(
+          this.state.selectedFile,
+          {
+            progress: (prog) => console.log(`received: ${prog}`)
+          }
+        )
+        console.log(addedFile)
+        console.log(addedFile.cid.toString+" path: "+addedFile.path)
+      } catch (err) {
+        console.error(err)
+      } 
+      finally{ 
+        return addedFile;
+      }
+    }
+
+
     // On file upload (click the upload button) 
     onFileUpload = (event) => { 
 
@@ -54,9 +94,12 @@ class CertIssue extends Component {
           var hash = shaObj.getHash("HEX");
           console.log("hash is "+hash);
 
+           //var bytes = new Uint8Array(evt.target.result);
+          //const shaObj2 = new jsSHA("SHA-256", "UINT8ARRAY");
+
           console.log("curr acc: "+this.state.current_account);
 
-         
+          const addedFile=this.uploadFileToIPFS();         
 
           /*  web3.eth.sendTransaction({
               from: this.state.current_account,
@@ -69,38 +112,44 @@ class CertIssue extends Component {
           });*/
           
           var msg=null;
-          try{
-            console.log("certi contract in props: "+this.props.certificate_contract);
-            console.log("certi contract in state: "+this.state.certificate_contract);
 
-            const { certificate_contract } = this.state;  
-            certificate_contract.methods.createCertificate(this.state.receiver_addr,
-              hash,
-              "").send({ from: this.state.current_account }).then(() => {
-                alert("Certificate issued!");
-              });
-          }
-          catch(error){
-            console.error(error);
-            msg = error.message;
-            console.log("error msg: "+msg);
-            if (msg.includes("User does not exist in the system"))
-            {
-              alert("Recipient user does not exist in the system");
+          if(!addedFile){
+            try{
+              console.log("certi contract in props: "+this.props.certificate_contract);
+              console.log("certi contract in state: "+this.state.certificate_contract);
+  
+              const { certificate_contract } = this.state;  
+              certificate_contract.methods.createCertificate(this.state.receiver_addr,
+                hash,addedFile.cid
+                ).send({ from: this.state.current_account }).then(() => {
+                  alert("Certificate issued!");
+                });
             }
-          }
-          finally{
-            if (msg !== null)
-            {
-              console.log("error msg1: "+msg);
+            catch(error){
+              console.error(error);
+              msg = error.message;
+              console.log("error msg: "+msg);
               if (msg.includes("User does not exist in the system"))
               {
                 alert("Recipient user does not exist in the system");
-              } 
+              }
             }
-          }      
-          //var bytes = new Uint8Array(evt.target.result);
-          //const shaObj2 = new jsSHA("SHA-256", "UINT8ARRAY");
+            finally{
+              if (msg !== null)
+              {
+                console.log("error msg1: "+msg);
+                if (msg.includes("User does not exist in the system"))
+                {
+                  alert("Recipient user does not exist in the system");
+                } 
+              }
+            }      
+          }
+
+          else{
+            alert("Unable to upload to IPFS")
+          }          
+         
         }
       };
 
