@@ -151,7 +151,7 @@ class CertIssue extends Component {
                             <input type="text" 
                                                 className="form-control" 
                                                 id="name"  
-                                                placeholder="Recipient unique ID" 
+                                                placeholder="Recipient public address" 
                                                 onChange={this.onChange}
                                                 name = "receiver_addr"
                                                 value={this.state.receiver_addr}
