@@ -1,5 +1,4 @@
 const Participants = artifacts.require("./Participants.sol");
-// const Certificates = artifacts.require("./Certificates.sol");
 
 contract("Participants", accounts => {
     var participantInstance;
@@ -144,22 +143,4 @@ contract("Participants", accounts => {
             assert.equal(count, 1, "User request was declined");
         });
     });
-
-    // it("institution can not decline request if requesting user is from another institution", function() {
-    //     let certificateInstance = Certificates.deployed();
-    //     participantInstance = Participants.deployed();
-    //     certificateInstance.createCertificate(accounts[2], "hash", "hash",{ from: accounts[1] })
-    //     .then(function(certificate) {
-    //         assert.equal(certificate.logs.length, 1, "event triggered?");
-    //         assert.equal(certificate.logs[0].event, "certificateCreationEvent", "certificate created?"); 
-    //         assert.equal(certificate.logs[0].args._recipientAddr, accounts[2], "the candidate id is correct?");
-    //         return certificateInstance.certificatesList(1);
-    //     }).then(function(certificate) {
-    //         assert(certificate[4], "the certificate is available in the list");
-    //         return certificateInstance.certificatesCount();
-    //     }).then(function(count) {
-    //         assert.equal(count, 1, "certificate count not incremented");
-    //     });
-    // });
-        
 });

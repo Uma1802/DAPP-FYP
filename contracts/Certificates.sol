@@ -3,7 +3,7 @@ import "./Participants.sol";
 
 contract Certificates {
     
-    Participants participants;
+    Participants public participants;
     address public owner;
     mapping (uint => Certificate) certificatesList;
     uint public certificatesCount = 0;
@@ -42,7 +42,7 @@ contract Certificates {
     function createCertificate(address _recipientAddr, string memory _certificateHash, string memory _ipfsHash) public
     {
         require(participants.checkIfUserExists(_recipientAddr)==true , "User does not exist in the system");
-        require(participants.getParticularUsersType(msg.sender)==2, "Permission denied");
+        require(participants.getParticularUsersType(msg.sender)==2 && participants.getParticularUsersType(_recipientAddr)==3, "Permission denied");
         certificatesList[certificatesCount++] = Certificate(certificatesCount,_recipientAddr, _certificateHash, _ipfsHash,true);
         emit certificateCreationEvent(certificatesCount,_recipientAddr, _certificateHash, _ipfsHash);
     }

@@ -11,7 +11,7 @@ module.exports = {
             network_id: '1515'
     },
     develop: {
-      port: 8545
+      port: 7545
     }
   }
 };
