@@ -17,7 +17,7 @@ class RegistrationControl extends Component {
         current_account: null, 
         contract: null,
         certificate_contract: null,
-        institutions: ["Others"],
+        institutions: [],
         flag: false
     };
 
@@ -87,7 +87,7 @@ class RegistrationControl extends Component {
                                         console.log("institutionName: "+ inst);
                                         if(inst!=="None") {                    
                                             this.setState({
-                                                institutions: [inst, this.state.institutions],
+                                                institutions: [this.state.institutions, inst ],
                                                 });
                                         }
                                 });
@@ -447,7 +447,7 @@ class RegistrationControl extends Component {
                                         required={this.state.userType === "EduUser" || this.state.userType === "" || (this.state.userType==="Institution" && this.state.institutionName==="")}>
                                             <option value="" disabled selected>Select instituition</option>
                                             {institutionsList}
-                                            {/* <option value="Others">Others</option> */}
+                                            <option value="Others">Others</option>
                                             {/* {(this.state.userType === "EduUser" || this.state.userType === "") && ( <option value="Others">Others</option>           
                                             )}                          */}
                                         </select>
