@@ -31,6 +31,7 @@ class InstitutionTabs extends Component {
                     current_account = {this.props.current_account} 
                     contract = {this.props.contract}
                     certificate_contract = {this.props.certificate_contract}
+                    participant_contract = {this.props.participant_contract}
                 />
             </div>
         </div>

@@ -6,7 +6,7 @@ class ExportCert extends Component {
 
     state={
         current_account: this.props.current_account, 
-        contract: this.props.contract,
+        participant_contract: this.props.contract,
         certificate_contract: this.props.certificate_contract,
         element: null,
     };
@@ -31,6 +31,7 @@ class ExportCert extends Component {
                             <td> <ExportButton 
                                             current_account = {this.state.current_account} 
                                             ipfsHash= {certificate_details[2]}
+                                            encKey= {certificate_details[3]}
                                             /> </td>
                             </tr>);
                         console.log("rows length: "+rows);

@@ -1,13 +1,15 @@
 import React,{Component} from 'react'; 
 import jsSHA from "jssha";
 import ipfs from './utils/ipfs'
-
+const NodeCrypt = require('./lib//ipfs-crypt/crypto')
+const crypto = require('crypto')
+const sigUtil = require('eth-sig-util')
   
 class CertIssue extends Component { 
    
     state = {   
       current_account: this.props.current_account, 
-      contract: this.props.contract, 
+      participant_contract: this.props.participant_contract, 
       selectedFile: null,
       web3: this.props.web3,
       certificate_contract: this.props.certificate_contract,
@@ -38,11 +40,7 @@ class CertIssue extends Component {
         console.error(err)
       })*/
 
-      /*
-     // await ipfs.add(fileToUpload).then(file =>  console.log("in add file "+file)).catch(err => alert( err))
-      //console.log("in add file "+file)
-    */
-
+ 
      var addedFile = null;
 
       try {
@@ -62,23 +60,45 @@ class CertIssue extends Component {
       }
     }
 
+    async add (buffer,key) {
+      try {
+        const crypto = new NodeCrypt({ key: key })  
+        console.log("buf type: ",typeof buffer)    
+        console.log("buf: ",buffer)
+
+        const encryptedBuffer = crypto.encryptBuffer(buffer)
+        //console.log("enc buf: ",encryptedBuffer)
+        //console.log("enc b type in add ",typeof encryptedBuffer)
+        const file = await ipfs.add(encryptedBuffer)
+        return file
+      } catch (error) {
+        console.error("errrror: ",error)
+      }
+    }
+
+    async encryptUpload (buffer,key)  {
+      var addedFile = null;
+      try {
+        console.log('uploading file...')
+        console.log("file buffer ",buffer)  
+        
+        addedFile = await this.add(buffer,key);
+        console.log('added file', addedFile)
+
+      } catch (error) {
+        console.error(error)
+      }
+      finally{ 
+        return addedFile;
+      }
+    }
+
 
     // On file upload (click the upload button) 
     onFileUpload = (event) => { 
 
       event.preventDefault();
-      const web3 = this.state.web3;
-
-      /*const formData = new FormData();
-      formData.append( 
-        "myFile", 
-        this.state.selectedFile, 
-        this.state.selectedFile.name 
-      );
-      // Request made to the backend api 
-      // Send formData object 
-      //axios.post("api/uploadfile", formData);
-       */
+      const web3 = this.state.web3;      
 
       console.log("on file submit " +this.state.selectedFile+"file data "+this.state.selectedFile.fileData+"gethash "+this.state.selectedFile.getHash+"hash "+this.state.selectedFile.hash+"name "+this.state.selectedFile.name+"value "+this.state.selectedFile.value); 
 
@@ -99,7 +119,12 @@ class CertIssue extends Component {
 
           console.log("curr acc: "+this.state.current_account);
 
-          const addedFile=this.uploadFileToIPFS();         
+          const key = crypto.randomBytes(16).toString('hex');
+          console.log("key is: ",key.length)
+
+          const addedFile = this.encryptUpload(evt.target.result,key);
+
+          //const addedFile=this.uploadFileToIPFS();         
 
           /*  web3.eth.sendTransaction({
               from: this.state.current_account,
@@ -117,10 +142,32 @@ class CertIssue extends Component {
             try{
               console.log("certi contract in props: "+this.props.certificate_contract);
               console.log("certi contract in state: "+this.state.certificate_contract);
-  
-              const { certificate_contract } = this.state;  
+
+                  const { certificate_contract, participant_contract} = this.state;  
+
+                let encryptionPublicKey = participant_contract.methods.getPublicKey(this.state.receiver_addr)   
+
+                  const encData = sigUtil.encrypt(
+                    encryptionPublicKey,
+                    { data: key},
+                    'x25519-xsalsa20-poly1305'
+                  )
+    
+                  console.log("encrypt data: ",encData)    
+                  const jsonStr=JSON.stringify(
+                    encData                    
+                  )    
+                  console.log("json str: ",jsonStr)
+                  console.log("json str type: ",typeof jsonStr)
+    
+                  /*var buff=Buffer.from(jsonStr,
+                    'utf8'
+                  )   
+                  console.log("type of buff: ",typeof buff)
+                  console.log("buff is: ",buff)   */  
+              
               certificate_contract.methods.createCertificate(this.state.receiver_addr,
-                hash,addedFile.cid
+                hash,addedFile.cid,jsonStr
                 ).send({ from: this.state.current_account }).then(() => {
                   alert("Certificate issued!");
                 });

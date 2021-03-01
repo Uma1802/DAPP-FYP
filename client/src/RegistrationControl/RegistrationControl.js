@@ -278,8 +278,7 @@ class RegistrationControl extends Component {
                         console.log("inside sign catch");
                         console.error(error);
                         console.log("end of sign catch");
-                    }
-                    
+                    }                    
                     
                     try{var res = await web3.eth.personal.ecRecover(nonce, signature);}
                     catch(err){ console.log("inside ecrover cstch"); console.error(err); console.log("end of ecrecover catch");}
@@ -288,7 +287,7 @@ class RegistrationControl extends Component {
                     if (current_account === recovered_address){
                         console.log("Login success");
                         loginFlag = true; 
-                        if(loginFlag){
+                        //if(loginFlag){
                             const { contract } = this.state;
                                 let res= await contract.methods.getParticularUser(current_account).call();
                                 console.log("res is "+res);
@@ -302,15 +301,33 @@ class RegistrationControl extends Component {
                                 else if(res[2]==3)
                                 {
                                     console.log("if2");
+
+                                    await window.ethereum
+                                    .request({
+                                        method: 'eth_getEncryptionPublicKey',
+                                        params: [current_account], 
+                                    })
+                                    .then((encryptionPublicKey) => {
+                                        console.log("enc pub key: ",encryptionPublicKey)
+                                        contract.methods.assignPublicKey(encryptionPublicKey).send({ from: current_account });
+                                    })
+                                    .catch((error) => {
+                                        if (error.code === 4001) {
+                                        console.log('We cant encrypt anything without the key.');
+                                        } else {
+                                        console.error(error);
+                                        }
+                                    }); 
+
                                     this.props.history.push('/eduUser')
                                 }
                                 else if(res[2]==1)
                                 {
-                                    console.log("if2");
+                                    console.log("if3");
                                     this.props.history.push('/institution')
                                 } 
                                 
-                        }                           
+                       // }                           
                     }
                     else{
                         console.log("Login failed");

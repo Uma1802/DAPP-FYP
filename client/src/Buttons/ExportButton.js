@@ -2,10 +2,40 @@ import React, { Component } from 'react';
 
 const IPFS = require('ipfs')
 const uint8ArrayConcat = require('uint8arrays/concat')
+const NodeCrypt = require('../lib//ipfs-crypt/crypto')
+const arrayBufferToHex = require('array-buffer-to-hex')
 
 class ExportButton extends Component {  
 
-    async downloadFileFromIPFS(ipfsHash)   {        
+    async cat(path,key,node) {
+
+        let encryptedBuffer;
+       
+          const crypto = new NodeCrypt({ key: key })
+          const chunks = []
+        try{
+          var i=0
+          for await (const chunk of node.cat(path)) {
+            //console.log("round: ",++i)
+            //console.log("chunk 1",chunk)  
+            chunks.push(chunk)   
+          }
+        
+        console.log("type of chunks ",typeof chunks)
+        console.log(chunks)
+  
+          //console.log("enc b from concat ",Buffer.concat(chunks)) causes error list arg must be arr of buff
+          encryptedBuffer = uint8ArrayConcat(chunks)
+          console.log("type of en buff ",typeof encryptedBuffer)
+          console.log("enc b: ",encryptedBuffer)      
+        } catch (error) {
+          console.error("e2: "+error)
+        }
+          const decryptedBuffer = crypto.decryptBuffer(encryptedBuffer)
+          return decryptedBuffer
+      }
+
+    async downloadFileFromIPFS(ipfsHash, key)   {        
  
         const node = await IPFS.create()
 
@@ -19,32 +49,67 @@ class ExportButton extends Component {
            .catch(err => {
              console.error(err)
            })
+
+           try{
+
+           const decryptedBuffer = await this.cat(ipfsHash,key,node)
+            console.log("decrypt: ",decryptedBuffer)
+
+            var blob = new Blob([decryptedBuffer], { type: 'application/pdf' });
+
+            console.log("blob ",blob)
+
+            var link = document.createElement('a');
+            link.href = window.URL.createObjectURL(blob);
+            var fileName = "sampleFile";
+            link.download = fileName;
+
+            console.log("blob2 ")
+            
+            link.click();
+
+                console.log('done!')
+            } catch (error) {
+                console.error(error)
+            }
  
-         const  chunks = []
-         for await (const chunk of node.cat(ipfsHash)) {
-             //console.log(chunk)
-             chunks.push(chunk)
-         } 
-         
-         node.stop().catch(err => console.error(err))
- 
-         var blob = new Blob([uint8ArrayConcat(chunks)], { type: 'application/pdf' });
- 
-         var link = document.createElement('a');
-         link.href = window.URL.createObjectURL(blob);
-         var fileName = "sampleFile";
-         link.download = fileName;
-         link.click();         
+            node.stop().catch(err => console.error(err))
+        
      }
  
 
     exportButtonHandler = async() => {  
         console.log("in export button handler");
-        const { current_account, ipfsHash } = this.props;       
+        const { current_account,ipfsHash,encKey } = this.props;       
           
         try{
-            downloadFileFromIPFS(ipfsHash)           
+
+        console.log("json str enc key: ",encKey)
+
+        var buff=Buffer.from(encKey,
+        'utf8'
+        )
+
+        console.log("buff is: ",buff)
+
+        const arrbuff=buff.buffer;
+
+        console.log("arr buff is ",arrbuff)
+
+        const encryptedKey = arrayBufferToHex(arrbuff)
+       console.log("encrypted message ",encryptedKey)  
+
+       window.ethereum
+       .request({
+         method: 'eth_decrypt',
+         params: [encryptedKey, current_account],
+       })
+       .then((decryptedKey) => {
+        console.log("The decrypted key is:", decryptedKey)
+
+            this.downloadFileFromIPFS(ipfsHash,decryptedKey)           
         }
+       );}
         catch(error){
             console.error("error in export "+error);
         }   
