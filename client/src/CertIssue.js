@@ -95,17 +95,17 @@ class CertIssue extends Component {
 
 
     // On file upload (click the upload button) 
-    onFileUpload = (event) => { 
+    onFileUpload (event) { 
 
       event.preventDefault();
       const web3 = this.state.web3;      
 
-      console.log("on file submit " +this.state.selectedFile+"file data "+this.state.selectedFile.fileData+"gethash "+this.state.selectedFile.getHash+"hash "+this.state.selectedFile.hash+"name "+this.state.selectedFile.name+"value "+this.state.selectedFile.value); 
+      console.log("on file submit " +this.state.selectedFile+"name "+this.state.selectedFile.name); 
 
 
       var reader = new FileReader();
 
-      reader.onload = (evt) => {
+      reader.onload = async(evt) => {
         if (evt.target.readyState == FileReader.DONE) { // DONE == 2
           console.log("onload res "+ evt.target.result);
 
@@ -137,8 +137,14 @@ class CertIssue extends Component {
           });*/
           
           var msg=null;
+          //console.log("Added file: "+addedFile);
+          console.log("rcvd file: "+addedFile);
+          if (addedFile==null)
+            console.log("rcd file is null");
+          else
+          console.log("rcd file is not null");
 
-          if(!addedFile){
+          if(addedFile){
             try{
               console.log("certi contract in props: "+this.props.certificate_contract);
               console.log("certi contract in state: "+this.state.certificate_contract);
@@ -213,10 +219,7 @@ class CertIssue extends Component {
             <h2>File Details:</h2> 
             <p>File Name: {this.state.selectedFile.name}</p> 
             <p>File Type: {this.state.selectedFile.type}</p> 
-            <p> 
-              Last Modified:{" "} 
-              {this.state.selectedFile.lastModifiedDate.toDateString()} 
-            </p> 
+             
           </div> 
         ); 
       } else { 

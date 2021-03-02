@@ -6386,37 +6386,6 @@
   "networks": {
     "5777": {
       "events": {
-        "0xe2868246f63337ec0153fc26aec8b77c47f2a457d83939e8f6535d7d58696ab6": {
-          "anonymous": false,
-          "inputs": [
-            {
-              "indexed": false,
-              "internalType": "uint256",
-              "name": "id",
-              "type": "uint256"
-            },
-            {
-              "indexed": false,
-              "internalType": "address",
-              "name": "recipientAddr",
-              "type": "address"
-            },
-            {
-              "indexed": false,
-              "internalType": "string",
-              "name": "certificateHash",
-              "type": "string"
-            },
-            {
-              "indexed": false,
-              "internalType": "string",
-              "name": "ipfsHash",
-              "type": "string"
-            }
-          ],
-          "name": "certificateCreationEvent",
-          "type": "event"
-        },
         "0xb6e5c25f42b87347c37285e3250ef625ba87d2deab893640cf0877311d8cf94d": {
           "anonymous": false,
           "inputs": [
@@ -6461,7 +6430,7 @@
     }
   },
   "schemaVersion": "3.3.2",
-  "updatedAt": "2021-03-02T04:50:20.768Z",
+  "updatedAt": "2021-03-02T06:31:27.185Z",
   "networkType": "ethereum",
   "devdoc": {
     "methods": {}
