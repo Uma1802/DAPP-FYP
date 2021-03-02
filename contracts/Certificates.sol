@@ -13,6 +13,7 @@ contract Certificates {
         address recipientAddr;
         string certificateHash;
         string ipfsHash;
+        string encKey;
         bool exists;
     }
     
@@ -21,7 +22,8 @@ contract Certificates {
         uint id,
         address recipientAddr,
         string certificateHash,
-        string ipfsHash
+        string ipfsHash,
+        string encKey
     );
     
     modifier onlyOwner {
@@ -39,12 +41,12 @@ contract Certificates {
       return true;
     }
     
-    function createCertificate(address _recipientAddr, string memory _certificateHash, string memory _ipfsHash) public
+    function createCertificate(address _recipientAddr, string memory _certificateHash, string memory _ipfsHash, string memory _encKey) public
     {
         require(participants.checkIfUserExists(_recipientAddr)==true , "User does not exist in the system");
         require(participants.getParticularUsersType(msg.sender)==2 && participants.getParticularUsersType(_recipientAddr)==3, "Permission denied");
-        certificatesList[certificatesCount++] = Certificate(certificatesCount,_recipientAddr, _certificateHash, _ipfsHash,true);
-        emit certificateCreationEvent(certificatesCount,_recipientAddr, _certificateHash, _ipfsHash);
+        certificatesList[certificatesCount++] = Certificate(certificatesCount,_recipientAddr, _certificateHash, _ipfsHash, _encKey,true);
+        emit certificateCreationEvent(certificatesCount,_recipientAddr, _certificateHash, _ipfsHash, _encKey);
     }
     
     
@@ -67,9 +69,9 @@ contract Certificates {
         return certificatesCount;
     }
     
-    function getParticularCertificate(uint _id) view public returns(address, string memory, string memory) {
+    function getParticularCertificate(uint _id) view public returns(address, string memory, string memory,string memory) {
         require(certificatesList[_id].exists==true, "Certificate with the given ID does not exist in the system");
-        return (certificatesList[_id].recipientAddr, certificatesList[_id].certificateHash, certificatesList[_id].ipfsHash);
+        return (certificatesList[_id].recipientAddr, certificatesList[_id].certificateHash, certificatesList[_id].ipfsHash, certificatesList[_id].encKey);
     }
     
     function getParticularCertificateHash(uint _id) view public returns(address, string memory) {
