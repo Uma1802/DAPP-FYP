@@ -53,7 +53,7 @@ class VerifyCert extends Component {
                             <input type="text" 
                                                 className="form-control" 
                                                 id="name"  
-                                                placeholder="Transaction ID" 
+                                                placeholder="Certificate ID" 
                                                 required
                             />    
                         </div>  
