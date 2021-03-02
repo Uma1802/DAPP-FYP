@@ -27,7 +27,7 @@ class PendingRequest extends Component {
 
     componentDidMount(){
         console.log("in didmount");
-        const { current_account, contract } = this.state;
+        const { contract } = this.state;
         contract.methods.getPendingRequest().call().then(
             (res) => {
                 this.setState({pending_requests: res});

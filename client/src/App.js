@@ -1,10 +1,4 @@
 import React, { Component } from "react";
-import SimpleStorageContract from "./contracts/SimpleStorage.json";
-import Participants from "./contracts/Participants.json";
-import Certificates from "./contracts/Certificates.json";
-import Transaction from "ethereumjs-tx";
-import getWeb3 from "./getWeb3";
-import Web3 from 'web3';
 import "./App.css";
 import { Route } from 'react-router-dom'
 import RegistrationControl from './RegistrationControl/RegistrationControl'

@@ -302,11 +302,29 @@ class RegistrationControl extends Component {
                                 else if(res[2]==3)
                                 {
                                     console.log("if2");
+
+                                    await window.ethereum
+                                    .request({
+                                        method: 'eth_getEncryptionPublicKey',
+                                        params: [current_account], 
+                                    })
+                                    .then((encryptionPublicKey) => {
+                                        console.log("enc pub key: ",encryptionPublicKey)
+                                        contract.methods.assignPublicKey(encryptionPublicKey).send({ from: current_account });
+                                    })
+                                    .catch((error) => {
+                                        if (error.code === 4001) {
+                                        console.log('We cant encrypt anything without the key.');
+                                        } else {
+                                        console.error(error);
+                                        }
+                                    }); 
+
                                     this.props.history.push('/eduUser')
                                 }
                                 else if(res[2]==1)
                                 {
-                                    console.log("if2");
+                                    console.log("if3");
                                     this.props.history.push('/institution')
                                 } 
                                 
