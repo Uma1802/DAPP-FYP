@@ -55,10 +55,8 @@ class RegistrationControl extends Component {
         this.setState({web3});
         console.log("in updateInstitution");
         try{
-            let result = await this.connectMetamaskAccount();
-            if (result !== "NO METAMASK"){
-                const current_account = web3.utils.toChecksumAddress(result);
-                console.log("Checksum of logged in account: "+current_account);
+            //let result = await this.connectMetamaskAccount();
+            //if (result !== "NO METAMASK"){
                 const networkId = await web3.eth.net.getId();
                 console.log("current network id: "+networkId);
                 const deployedNetwork = Participants.networks[networkId];
@@ -66,15 +64,9 @@ class RegistrationControl extends Component {
                     Participants.abi,
                     deployedNetwork && deployedNetwork.address,
                     );
-                const deployedNetwork1 = Certificates.networks[networkId];
-                const instance1 = new web3.eth.Contract(
-                        Certificates.abi,
-                        deployedNetwork1 && deployedNetwork1.address,
-                        );
                 console.log("Participants sol address: "+instance.options.address);  
-                console.log("Certificates sol address: "+instance1.options.address);
             
-                this.setState({ current_account, contract: instance, certificate_contract: instance1 });
+                this.setState({contract: instance });
                 const contract = this.state.contract;                
                 contract.methods.getInstitutionsCount().call().then(
                     (count) => {                
@@ -99,11 +91,11 @@ class RegistrationControl extends Component {
                         }
                     }
                 );
-            }
-            else{
-                alert("Please install metamask!");
+            //}
+            //else{
+            //    alert("Please install metamask!");
                 
-            }
+            //}
         }
         catch(error){
             console.error(error);
@@ -531,10 +523,22 @@ class RegistrationControl extends Component {
 
                     </div>
 
-                    <div className="mt-5"
-                    > <span className="verifyText" onClick={this.verifyButtonHandler}> CLICK HERE TO VERIFY CERTIFICATES </span></div>
+                    
 
                 </div>
+
+                
+                 <div className="row justify-content-center">
+                    <button 
+                                                        type="submit" 
+                                                        className="btn btn-primary mt-5"
+                                                        onClick={this.verifyButtonHandler}
+                                                        background-color= "#314455"
+                                                    >CLICK HERE TO VERIFY CERTIFICATES</button>
+                    </div>
+                                    
+
+
 
             </div>
                     

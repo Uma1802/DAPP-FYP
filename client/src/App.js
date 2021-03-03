@@ -5,6 +5,7 @@ import RegistrationControl from './RegistrationControl/RegistrationControl'
 import InstitutionDashBoard from './institutionDash'
 import EduUserDashBoard from './eduUserDash'
 import VerifyCert from "./verifyCert";
+import Header from "./Header/Header";
 
 class App extends Component {
   state = { 
@@ -83,10 +84,13 @@ class App extends Component {
             )}/>
 
       <Route exact path='/verify' render={() => (
+        <div>
+          <Header/>
               <VerifyCert
               web3 = {this.state.web3}  
               certificate_contract = {this.state.certificate_contract}
               />
+        </div>
             )}/>
 
       </div>
