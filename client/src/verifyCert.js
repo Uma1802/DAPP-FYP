@@ -1,16 +1,34 @@
 import React,{Component} from 'react'; 
+import jsSHA from "jssha";
   
 class VerifyCert extends Component { 
    
     state = {  
       cert_id:null,
-      selectedFile: null
+      selectedFile: null,
+      isVerified:0
+    }; 
+
+    verificationStatus = () => {
+     
+      if (this.state.isVerified === 1) {           
+        return ( 
+          <div> 
+            <h2>Certificate {this.state.cert_id} is verified </h2>              
+          </div> 
+        ); 
+      } else if (this.state.isVerified === -1) { 
+        return ( 
+          <div> 
+            <h2>Certificate {this.state.cert_id} is not verified !! </h2>              
+          </div> 
+        ); 
+      } 
     }; 
      
     
     onFileChange = event => {      
-     
-      this.setState({ selectedFile: event.target.files[0] });      
+           this.setState({ selectedFile: event.target.files[0] });      
     }; 
      
     
@@ -31,7 +49,12 @@ class VerifyCert extends Component {
 
           certificate_contract.methods.getParticularCertificateHash(this.state.cert_id).call().then(
             (address,storedHash)=>{
-              
+              if(storedHash===hash){
+                this.setState({isVerified:1});
+              }
+              else{
+                this.setState({isVerified:-1});
+              }
           });
         }
       };
@@ -86,6 +109,8 @@ class VerifyCert extends Component {
                 </div>
 
             </div>
+
+            {this.verificationStatus()}
 
             </div>
       ); 

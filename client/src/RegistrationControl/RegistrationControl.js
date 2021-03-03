@@ -233,6 +233,31 @@ class RegistrationControl extends Component {
         
     }
 
+    verifyButtonHandler  = async() => {
+        try{
+                const web3 = new Web3(Web3.givenProvider);
+            const result = await this.connectMetamaskAccount();
+            if (result !== "NO METAMASK")
+            { 
+                const networkId = await web3.eth.net.getId();
+                console.log("current network id: "+networkId);
+                const deployedNetwork1 = Certificates.networks[networkId];
+                const instance1 = new web3.eth.Contract(
+                            Certificates.abi,
+                            deployedNetwork1 && deployedNetwork1.address,
+                            );
+                    console.log("Certificates sol address: "+instance1.options.address);
+
+                this.setState({ web3, certificate_contract: instance1});
+                this.props.changeAppState(this.state.web3,this.state.current_account,this.state.contract,this.state.certificate_contract);
+                this.props.history.push('/verify')    
+            } 
+        }
+        catch (error){
+            console.error(error);
+        }
+    }
+
     loginButtonHandler = async() => {
         var loginFlag = false;
         var current_account=null;
@@ -499,6 +524,9 @@ class RegistrationControl extends Component {
                         </div>
 
                     </div>
+
+                    <div className="mt-5"
+                    > <span className="verifyText" onClick={this.verifyButtonHandler}> CLICK HERE TO VERIFY CERTIFICATES </span></div>
 
                 </div>
 

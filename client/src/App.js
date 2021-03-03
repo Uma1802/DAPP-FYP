@@ -4,6 +4,7 @@ import { Route } from 'react-router-dom'
 import RegistrationControl from './RegistrationControl/RegistrationControl'
 import InstitutionDashBoard from './institutionDash'
 import EduUserDashBoard from './eduUserDash'
+import VerifyCert from "./verifyCert";
 
 class App extends Component {
   state = { 
@@ -50,19 +51,6 @@ class App extends Component {
       return <div>Loading Web3, accounts, and contract...</div>;
     }*/
     return (
-      /*<div className="App">
-        <h1>Good to Go!</h1>
-        <p>Your Truffle Box is installed and ready.</p>
-        <h2>Smart Contract Example</h2>
-        <p>
-          If your contracts compiled and migrated successfully, below will show
-          a stored value of 5 (by default).
-        </p>
-        <p>
-          Try changing the value stored on <strong>line 40</strong> of App.js.
-        </p>
-        <div>The stored value is: {this.state.storageValue}</div>
-      </div>*/
       <div>
        <Route exact path='/' render={({ history }) => ( 
          
@@ -90,6 +78,13 @@ class App extends Component {
               web3 = {this.state.web3} 
               current_account = {this.state.current_account} 
               contract = {this.state.contract} 
+              certificate_contract = {this.state.certificate_contract}
+              />
+            )}/>
+
+      <Route exact path='/verify' render={() => (
+              <VerifyCert
+              web3 = {this.state.web3}  
               certificate_contract = {this.state.certificate_contract}
               />
             )}/>
