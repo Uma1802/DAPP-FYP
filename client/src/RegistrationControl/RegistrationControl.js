@@ -320,8 +320,8 @@ class RegistrationControl extends Component {
                                 {
                                     console.log("if2");
 
-                                    participant_contract.methods.getPublicKey(this.state.receiver_addr).call().then(
-                                        (key) => {
+                                    const key = await contract.methods.getPublicKey(current_account).call()
+                                        
                                         console.log("PublicKey: ",key);
                                         if(!key){
                                             await window.ethereum
@@ -340,8 +340,8 @@ class RegistrationControl extends Component {
                                                 console.error(error);
                                                 }
                                             }); 
-                                        }                              
-                                      });   
+                                        }                            
+                                       
 
                                     this.props.history.push('/eduUser')
                                 }
