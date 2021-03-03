@@ -29,7 +29,7 @@ contract("Certificates", async accounts => {
         await participantsInstance.approveRequest(accounts[2], { from: accounts[1] });
         cnt = await participantsInstance.usersCount();
         assert.equal(cnt.toNumber(), 3, "users request not approved");
-        await certificateInstance.createCertificate(accounts[2], "certificateHash", "ipfsHash", { from: accounts[1] });
+        await certificateInstance.createCertificate(accounts[2], "certificateHash", "ipfsHash", "encKey",{ from: accounts[1] });
         cnt = await certificateInstance.certificatesCount();
         assert.equal(cnt.toNumber(), 1, "certificate not issued");
     });
@@ -42,7 +42,7 @@ contract("Certificates", async accounts => {
         assert.equal(cnt.toNumber(), 3, "users not available");
         let val = false;
         try{
-            await certificateInstance.createCertificate(accounts[2], "certificateHash", "ipfsHash", { from: accounts[0] });
+            await certificateInstance.createCertificate(accounts[2], "certificateHash", "ipfsHash", "encKey",{ from: accounts[0] });
         } catch(e){
             val = true;
         }
@@ -59,7 +59,7 @@ contract("Certificates", async accounts => {
         assert.equal(cnt.toNumber(), 3, "users not available");
         let val = false;
         try{
-        await certificateInstance.createCertificate(accounts[2], "certificateHash", "ipfsHash", { from: accounts[2] });
+        await certificateInstance.createCertificate(accounts[2], "certificateHash", "ipfsHash","encKey", { from: accounts[2] });
         } catch(e){
             val = true;
         }
@@ -76,7 +76,7 @@ contract("Certificates", async accounts => {
         assert.equal(cnt.toNumber(), 3, "users not available");
         let val = false;
         try{
-            await certificateInstance.createCertificate(accounts[0], "certificateHash", "ipfsHash", { from: accounts[1] });
+            await certificateInstance.createCertificate(accounts[0], "certificateHash", "ipfsHash","encKey", { from: accounts[1] });
         } catch(e){
             val = true;
         }
@@ -84,7 +84,7 @@ contract("Certificates", async accounts => {
         assert.equal(val, true, "Certificate require() not working as expected");
         assert.equal(cnt.toNumber(), 1, "certificate issued");
         try{
-            await certificateInstance.createCertificate(accounts[1], "certificateHash", "ipfsHash", { from: accounts[1] });
+            await certificateInstance.createCertificate(accounts[1], "certificateHash", "ipfsHash","encKey", { from: accounts[1] });
         } catch(e){
             val = true;
         }

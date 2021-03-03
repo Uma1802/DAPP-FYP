@@ -328,22 +328,28 @@ class RegistrationControl extends Component {
                                 {
                                     console.log("if2");
 
-                                    await window.ethereum
-                                    .request({
-                                        method: 'eth_getEncryptionPublicKey',
-                                        params: [current_account], 
-                                    })
-                                    .then((encryptionPublicKey) => {
-                                        console.log("enc pub key: ",encryptionPublicKey)
-                                        contract.methods.assignPublicKey(encryptionPublicKey).send({ from: current_account });
-                                    })
-                                    .catch((error) => {
-                                        if (error.code === 4001) {
-                                        console.log('We cant encrypt anything without the key.');
-                                        } else {
-                                        console.error(error);
-                                        }
-                                    }); 
+                                    participant_contract.methods.getPublicKey(this.state.receiver_addr).call().then(
+                                        (key) => {
+                                        console.log("PublicKey: ",key);
+                                        if(!key){
+                                            await window.ethereum
+                                            .request({
+                                                method: 'eth_getEncryptionPublicKey',
+                                                params: [current_account], 
+                                            })
+                                            .then((encryptionPublicKey) => {
+                                                console.log("enc pub key: ",encryptionPublicKey)
+                                                contract.methods.assignPublicKey(encryptionPublicKey).send({ from: current_account });
+                                            })
+                                            .catch((error) => {
+                                                if (error.code === 4001) {
+                                                console.log('We cant encrypt anything without the key.');
+                                                } else {
+                                                console.error(error);
+                                                }
+                                            }); 
+                                        }                              
+                                      });   
 
                                     this.props.history.push('/eduUser')
                                 }
