@@ -296,6 +296,7 @@ class RegistrationControl extends Component {
             if (typeof window.ethereum !== 'undefined') {
                 console.log('MetaMask is installed!');
                 const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
+                console.log("reqaccounts: "+accounts);
                 const account = accounts[0];
                 console.log("Logged in account: "+account);
                 result = account;

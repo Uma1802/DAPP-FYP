@@ -25,12 +25,13 @@ contract Participants {
     address[] requestsAddrList;
     string[] institutionsList;
     
-    event userRequestEvent
+    event userEvent
     (
         uint id,
         string name,
         uint userType,
-        string institution
+        string institution,
+        address addr
     );
     
     constructor() public
@@ -51,7 +52,7 @@ contract Participants {
         ++requestsCount;
         requestsList[msg.sender] = User(_id, _name, _userType, _institution, msg.sender, true);
         requestsAddrList.push(msg.sender);
-        emit userRequestEvent(_id, _name, _userType, _institution);
+        emit userEvent(requestsList[msg.sender].id, requestsList[msg.sender].name, requestsList[msg.sender].userType, requestsList[msg.sender].institution, msg.sender);
     }
     
     function getPendingRequest() view public returns(address[] memory)
@@ -112,11 +113,15 @@ contract Participants {
         delete requestsAddrList[requestsList[addr].id - 1];
         delete requestsList[addr];
         --requestsCount;
-        if(usersList[addr].userType == 2 && institutionsCheckList[usersList[addr].institution] == false){
-            institutionsCheckList[usersList[addr].institution] = true;
-            institutionsList.push(usersList[addr].institution);
-            ++institutionCount;
+        if(usersList[addr].userType == 2){
+            if(institutionsCheckList[usersList[addr].institution] == false){
+                institutionsCheckList[usersList[addr].institution] = true;
+                institutionsList.push(usersList[addr].institution);
+                ++institutionCount;
+            }
+            emit userEvent(usersList[addr].id, usersList[addr].name, usersList[addr].userType, usersList[addr].institution, addr);
         }
+        
     }
     
     function declineRequest(address addr) public {
