@@ -46,7 +46,7 @@ contract Certificates {
         require(participants.checkIfUserExists(_recipientAddr)==true , "User does not exist in the system");
         require(participants.getParticularUsersType(msg.sender)==2 && participants.getParticularUsersType(_recipientAddr)==3, "Permission denied");
         certificatesList[certificatesCount++] = Certificate(certificatesCount,_recipientAddr, _certificateHash, _ipfsHash, _encKey,true);
-        emit certificateCreationEvent(certificatesCount,_recipientAddr, _certificateHash, _ipfsHash, _encKey);
+        emit certificateCreationEvent(certificatesCount, _recipientAddr, _certificateHash, _ipfsHash, _encKey);
     }
     
     
