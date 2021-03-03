@@ -6,10 +6,3 @@ module.exports = function(deployer) {
     return deployer.deploy(Certificates, Participants.address);
   });
 };
-
-/*var Certificates = artifacts.require("./Certificates.sol");
-
-module.exports = function(deployer) {
-  deployer.deploy(Certificates, Participants.address);
-};*/
-

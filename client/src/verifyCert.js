@@ -1,38 +1,78 @@
 import React,{Component} from 'react'; 
+import jsSHA from "jssha";
   
 class VerifyCert extends Component { 
    
-    state = {   
-      // Initially, no file is selected 
-      selectedFile: null
+    state = {  
+      cert_id:null,
+      selectedFile: null,
+      isVerified:0
+    }; 
+
+    verificationStatus = () => {
+     
+      if (this.state.isVerified === 1) {           
+        return ( 
+          <div> 
+            <h2>Certificate {this.state.cert_id} is verified </h2>              
+          </div> 
+        ); 
+      } else if (this.state.isVerified === -1) { 
+        return ( 
+          <div> 
+            <h2>Certificate {this.state.selectedFile.name} is not verified !! </h2>              
+          </div> 
+        ); 
+      } 
     }; 
      
-    // On file select (from the pop up) 
+    
     onFileChange = event => {      
-      // Update the state 
-      this.setState({ selectedFile: event.target.files[0] });      
+           this.setState({ selectedFile: event.target.files[0] });      
     }; 
      
-    // On file upload (click the upload button) 
-    onFileUpload = () => { 
-     
-      // Create an object of formData 
-      const formData = new FormData(); 
-     
-      // Update the formData object 
-      formData.append( 
-        "myFile", 
-        this.state.selectedFile, 
-        this.state.selectedFile.name 
-      ); 
-     
-      // Details of the uploaded file 
-      console.log(this.state.selectedFile); 
-     
-      // Request made to the backend api 
-      // Send formData object 
-      //axios.post("api/uploadfile", formData); 
+    
+    handleSubmit = (e) => { 
+      e.preventDefault();
+      const {certificate_contract}=this.props;    
+
+      var reader = new FileReader();
+
+      reader.onload = async(evt) => {
+        if (evt.target.readyState == FileReader.DONE) { // DONE == 2
+          console.log("onload res "+ evt.target.result);
+
+          const shaObj = new jsSHA("SHA-256", "ARRAYBUFFER");
+          shaObj.update(evt.target.result);          
+          var hash = shaObj.getHash("HEX");
+          console.log("hash is "+hash);
+          console.log("type of certid: "+typeof(this.state.cert_id));
+          var certid = parseInt(this.state.cert_id)
+          console.log("type of certid2: "+typeof(certid));
+
+          certificate_contract.methods.getParticularCertificateHash(certid-100000).call().then(
+            (object)=>{
+              console.log("submitted hash: "+hash);
+              console.log("ret obj: "+object);
+              console.log("retrieved hash: "+object[1]);
+              if(object[1]===hash){
+                this.setState({isVerified:1});
+              }
+              else{
+                this.setState({isVerified:-1});
+              }
+          });
+        }
+      };
+      reader.readAsArrayBuffer(this.state.selectedFile);   
+
+      
     }; 
+
+    onChange = (e) => {
+      console.log("changing name: "+e.target.name+" changing value: "+e.target.value);
+      this.setState({[e.target.name]: e.target.value});
+    }
      
      
     render() { 
@@ -52,7 +92,9 @@ class VerifyCert extends Component {
                             </div>
                             <input type="text" 
                                                 className="form-control" 
-                                                id="name"  
+                                                name="cert_id"
+                                                value = {this.state.cert_id}
+                                                onChange={this.onChange}
                                                 placeholder="Certificate ID" 
                                                 required
                             />    
@@ -66,7 +108,6 @@ class VerifyCert extends Component {
                     <button 
                         type="submit" 
                         className="btn btn-primary"
-                        onClick={this.onFileUpload}
                     >Verify</button>
                         
                     </form>     
@@ -74,6 +115,8 @@ class VerifyCert extends Component {
                 </div>
 
             </div>
+
+            {this.verificationStatus()}
 
             </div>
       ); 
