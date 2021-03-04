@@ -37,6 +37,20 @@ class PendingRequest extends Component {
                 try{
                     console.log("pending_requests in didmount: "+this.state.pending_requests);
                     console.log("Current Address: "+this.state.current_account);
+                    var currentUserInstitution ="";
+                    var currentUserType ="";
+                    this.state.contract.methods.getParticularUser(this.state.current_account).call().then(
+                        (res) =>
+                        {   console.log(" res[0] "+res[0]);
+                            console.log(" res[1] "+res[1]);
+                            console.log(" res[2] "+res[2]);
+                            console.log(" res[3] "+res[3]);
+                            console.log(" res[4] "+res[4]);
+                            currentUserInstitution = res[3];
+                            currentUserType = res[2];
+                        
+                    console.log(" currentUserInstitution: "+currentUserInstitution);
+                    console.log(" currentUserType: "+currentUserType);
                     for (x in this.state.pending_requests)
                     {
                         cnt++;
@@ -44,27 +58,32 @@ class PendingRequest extends Component {
                         let current_req_addr = this.state.pending_requests[x];
                         if (current_req_addr != "0x0000000000000000000000000000000000000000"){
                             this.state.contract.methods.getParticularRequest(current_req_addr).call().then(
-                                (request_details) => {
-                                    console.log("NAME: "+request_details[1]);
-                                    console.log("REQ ADDR: "+current_req_addr);
-                                    rows.push(<tr key={current_req_addr}>
-                                        <td>{request_details[1]}</td>
-                                        <td>{current_req_addr}</td>
-                                        <td><AdmitButton
-                                            current_account = {this.state.current_account} 
-                                            contract = {this.state.contract} 
-                                            req_addr={current_req_addr}
-                                            deleteRequestRow = {this.deleteRequestRow}
-                                        /></td>
-                                        <td><DenyButton
-                                            current_account = {this.state.current_account} 
-                                            contract = {this.state.contract} 
-                                            req_addr={current_req_addr}
-                                            deleteRequestRow = {this.deleteRequestRow}
-                                        /></td>
-                                        </tr>);
-                                    console.log("row len in loop: "+rows.length);
-                                    console.log("rows in loop: "+rows) ;
+                                (request_details) => {                                   
+                                   
+                                    if((currentUserType==1)||(currentUserType==2 && request_details[3]== currentUserInstitution)){
+                                        console.log("NAME: "+request_details[1]);
+                                        console.log("INSTITUTION"+request_details[3])
+                                        console.log("REQ ADDR: "+current_req_addr);
+                                        rows.push(<tr key={current_req_addr}>
+                                            <td>{request_details[1]}</td>
+                                            <td>{request_details[3]}</td>
+                                            <td>{current_req_addr}</td>
+                                            <td><AdmitButton
+                                                current_account = {this.state.current_account} 
+                                                contract = {this.state.contract} 
+                                                req_addr={current_req_addr}
+                                                deleteRequestRow = {this.deleteRequestRow}
+                                            /></td>
+                                            <td><DenyButton
+                                                current_account = {this.state.current_account} 
+                                                contract = {this.state.contract} 
+                                                req_addr={current_req_addr}
+                                                deleteRequestRow = {this.deleteRequestRow}
+                                            /></td>
+                                            </tr>);
+                                        console.log("row len in loop: "+rows.length);
+                                        console.log("rows in loop: "+rows) ;
+                                    }
                                 if (cnt == this.state.pending_requests.length){
                                     console.log("going to return rows..row len: "+rows.length);
                                     this.setState({rows});
@@ -79,6 +98,8 @@ class PendingRequest extends Component {
                         console.log("no rows");
                         this.setState({element:<tbody><h2>No Pending Requests!</h2></tbody>});
                     } 
+                    }
+                    );
                 }
                 catch(error){
                     console.error(error);
@@ -121,6 +142,7 @@ class PendingRequest extends Component {
                                 <thead className="thead-dark">
                                     <tr>
                                         <th>Name</th>
+                                        <th>Institution</th>
                                         <th>Address</th>
                                         <th>&nbsp;</th>
                                         <th>&nbsp;</th>
