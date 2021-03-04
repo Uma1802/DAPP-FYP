@@ -36,6 +36,7 @@ class PendingRequest extends Component {
                 var cnt=0;
                 try{
                     console.log("pending_requests in didmount: "+this.state.pending_requests);
+                    console.log("Current Address: "+this.state.current_account);
                     for (x in this.state.pending_requests)
                     {
                         cnt++;
