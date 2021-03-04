@@ -17,7 +17,7 @@ class RegistrationControl extends Component {
         current_account: null, 
         contract: null,
         certificate_contract: null,
-        institutions: [],
+        institutions: ["Others"],
         flag: false
     };
 
@@ -29,18 +29,24 @@ class RegistrationControl extends Component {
     onChange = (e) => {
         console.log("changing name: "+e.target.name+" changing value: "+e.target.value);
         this.setState({[e.target.name]: e.target.value});
-        
-      }
+    }
 
     onChangeFunc = (e) => {
         console.log("changing name: "+e.target.name+" changing value: "+e.target.value);
+        
         if(e.target.value === "Others"){
             this.setState({flag: true});
+            this.setState({[e.target.name]: "None"});
+            console.log("institution name in state: "+ this.state.institutionName);
         }
         else {
             this.setState({flag: false});
+            //this.setState({institutionName: e.target.value});
+            this.setState({[e.target.name]: e.target.value});
+            console.log("institution name in state: "+ this.state.institutionName);
         }
-        //this.setState({[e.target.name]: e.target.value});
+        
+        //
     }
 
     componentDidMount(){
@@ -55,10 +61,8 @@ class RegistrationControl extends Component {
         this.setState({web3});
         console.log("in updateInstitution");
         try{
-            let result = await this.connectMetamaskAccount();
-            if (result !== "NO METAMASK"){
-                const current_account = web3.utils.toChecksumAddress(result);
-                console.log("Checksum of logged in account: "+current_account);
+            //let result = await this.connectMetamaskAccount();
+            //if (result !== "NO METAMASK"){
                 const networkId = await web3.eth.net.getId();
                 console.log("current network id: "+networkId);
                 const deployedNetwork = Participants.networks[networkId];
@@ -66,15 +70,9 @@ class RegistrationControl extends Component {
                     Participants.abi,
                     deployedNetwork && deployedNetwork.address,
                     );
-                const deployedNetwork1 = Certificates.networks[networkId];
-                const instance1 = new web3.eth.Contract(
-                        Certificates.abi,
-                        deployedNetwork1 && deployedNetwork1.address,
-                        );
                 console.log("Participants sol address: "+instance.options.address);  
-                console.log("Certificates sol address: "+instance1.options.address);
             
-                this.setState({ current_account, contract: instance, certificate_contract: instance1 });
+                this.setState({contract: instance });
                 const contract = this.state.contract;                
                 contract.methods.getInstitutionsCount().call().then(
                     (count) => {                
@@ -99,11 +97,11 @@ class RegistrationControl extends Component {
                         }
                     }
                 );
-            }
-            else{
-                alert("Please install metamask!");
+            //}
+            //else{
+            //    alert("Please install metamask!");
                 
-            }
+            //}
         }
         catch(error){
             console.error(error);
@@ -209,6 +207,7 @@ class RegistrationControl extends Component {
                 console.log("requests list: "+res);
                 console.log("requests list size: "+res.length);
                 try{
+                    console.log("institution: "+this.state.institutionName);
                     await contract.methods.createUserRequest(this.state.userName,
                         usertype_number,
                         this.state.institutionName).send({ from: current_account });
@@ -231,6 +230,31 @@ class RegistrationControl extends Component {
             console.error(error);
         }
         
+    }
+
+    verifyButtonHandler  = async() => {
+        try{
+                const web3 = new Web3(Web3.givenProvider);
+            const result = await this.connectMetamaskAccount();
+            if (result !== "NO METAMASK")
+            { 
+                const networkId = await web3.eth.net.getId();
+                console.log("current network id: "+networkId);
+                const deployedNetwork1 = Certificates.networks[networkId];
+                const instance1 = new web3.eth.Contract(
+                            Certificates.abi,
+                            deployedNetwork1 && deployedNetwork1.address,
+                            );
+                    console.log("Certificates sol address: "+instance1.options.address);
+
+                this.setState({ web3, certificate_contract: instance1});
+                this.props.changeAppState(this.state.web3,this.state.current_account,this.state.contract,this.state.certificate_contract);
+                this.props.history.push('/verify')    
+            } 
+        }
+        catch (error){
+            console.error(error);
+        }
     }
 
     loginButtonHandler = async() => {
@@ -282,7 +306,7 @@ class RegistrationControl extends Component {
                     
                     
                     try{var res = await web3.eth.personal.ecRecover(nonce, signature);}
-                    catch(err){ console.log("inside ecrover cstch"); console.error(err); console.log("end of ecrecover catch");}
+                    catch(err){ console.log("inside recover catch"); console.error(err); console.log("end of ecrecover catch");}
                     const recovered_address = web3.utils.toChecksumAddress(res);
                     console.log("Recovered address: "+recovered_address);
                     if (current_account === recovered_address){
@@ -303,22 +327,28 @@ class RegistrationControl extends Component {
                                 {
                                     console.log("if2");
 
-                                    await window.ethereum
-                                    .request({
-                                        method: 'eth_getEncryptionPublicKey',
-                                        params: [current_account], 
-                                    })
-                                    .then((encryptionPublicKey) => {
-                                        console.log("enc pub key: ",encryptionPublicKey)
-                                        contract.methods.assignPublicKey(encryptionPublicKey).send({ from: current_account });
-                                    })
-                                    .catch((error) => {
-                                        if (error.code === 4001) {
-                                        console.log('We cant encrypt anything without the key.');
-                                        } else {
-                                        console.error(error);
-                                        }
-                                    }); 
+                                    const key = await contract.methods.getPublicKey(current_account).call()
+                                        
+                                        console.log("PublicKey: ",key);
+                                        if(!key){
+                                            await window.ethereum
+                                            .request({
+                                                method: 'eth_getEncryptionPublicKey',
+                                                params: [current_account], 
+                                            })
+                                            .then((encryptionPublicKey) => {
+                                                console.log("enc pub key: ",encryptionPublicKey)
+                                                contract.methods.assignPublicKey(encryptionPublicKey).send({ from: current_account });
+                                            })
+                                            .catch((error) => {
+                                                if (error.code === 4001) {
+                                                console.log('We cant encrypt anything without the key.');
+                                                } else {
+                                                console.error(error);
+                                                }
+                                            }); 
+                                        }                            
+                                       
 
                                     this.props.history.push('/eduUser')
                                 }
@@ -465,7 +495,7 @@ class RegistrationControl extends Component {
                                         required={this.state.userType === "EduUser" || this.state.userType === "" || (this.state.userType==="Institution" && this.state.institutionName==="")}>
                                             <option value="" disabled selected>Select instituition</option>
                                             {institutionsList}
-                                            <option value="Others">Others</option>
+                                            {/* <option value="Others">Others</option> */}
                                             {/* {(this.state.userType === "EduUser" || this.state.userType === "") && ( <option value="Others">Others</option>           
                                             )}                          */}
                                         </select>
@@ -500,7 +530,22 @@ class RegistrationControl extends Component {
 
                     </div>
 
+                    
+
                 </div>
+
+                
+                 <div className="row justify-content-center">
+                    <button 
+                                                        type="submit" 
+                                                        className="btn btn-primary mt-5"
+                                                        onClick={this.verifyButtonHandler}
+                                                        background-color= "#314455"
+                                                    >CLICK HERE TO VERIFY CERTIFICATES</button>
+                    </div>
+                                    
+
+
 
             </div>
                     

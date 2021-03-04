@@ -63,7 +63,8 @@ class ExportButton extends Component {
             var link = document.createElement('a');
             link.href = window.URL.createObjectURL(blob);
             var fileName = "sampleFile";
-            link.download = fileName;
+            link.download = this.props.certId;
+            //fileName;
 
             console.log("blob2 ")
             

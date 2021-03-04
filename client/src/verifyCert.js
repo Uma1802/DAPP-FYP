@@ -1,21 +1,39 @@
 import React,{Component} from 'react'; 
+import jsSHA from "jssha";
   
 class VerifyCert extends Component { 
    
     state = {  
       cert_id:null,
-      selectedFile: null
+      selectedFile: null,
+      isVerified:0
+    }; 
+
+    verificationStatus = () => {
+     
+      if (this.state.isVerified === 1) {           
+        return ( 
+          <div> 
+            <h2>Certificate {this.state.cert_id} is verified </h2>              
+          </div> 
+        ); 
+      } else if (this.state.isVerified === -1) { 
+        return ( 
+          <div> 
+            <h2>Certificate {this.state.selectedFile.name} is not verified !! </h2>              
+          </div> 
+        ); 
+      } 
     }; 
      
     
     onFileChange = event => {      
-     
-      this.setState({ selectedFile: event.target.files[0] });      
+           this.setState({ selectedFile: event.target.files[0] });      
     }; 
      
     
-    handleSubmit = () => { 
-
+    handleSubmit = (e) => { 
+      e.preventDefault();
       const {certificate_contract}=this.props;    
 
       var reader = new FileReader();
@@ -28,10 +46,21 @@ class VerifyCert extends Component {
           shaObj.update(evt.target.result);          
           var hash = shaObj.getHash("HEX");
           console.log("hash is "+hash);
+          console.log("type of certid: "+typeof(this.state.cert_id));
+          var certid = parseInt(this.state.cert_id)
+          console.log("type of certid2: "+typeof(certid));
 
-          certificate_contract.methods.getParticularCertificateHash(this.state.cert_id).call().then(
-            (address,storedHash)=>{
-              
+          certificate_contract.methods.getParticularCertificateHash(certid-100000).call().then(
+            (object)=>{
+              console.log("submitted hash: "+hash);
+              console.log("ret obj: "+object);
+              console.log("retrieved hash: "+object[1]);
+              if(object[1]===hash){
+                this.setState({isVerified:1});
+              }
+              else{
+                this.setState({isVerified:-1});
+              }
           });
         }
       };
@@ -86,6 +115,8 @@ class VerifyCert extends Component {
                 </div>
 
             </div>
+
+            {this.verificationStatus()}
 
             </div>
       ); 

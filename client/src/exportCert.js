@@ -32,6 +32,7 @@ class ExportCert extends Component {
                                             current_account = {this.state.current_account} 
                                             ipfsHash= {certificate_details[2]}
                                             encKey= {certificate_details[3]}
+                                            certId={10000+i}
                                             /> </td>
                             </tr>);
                         console.log("rows length: "+rows);
