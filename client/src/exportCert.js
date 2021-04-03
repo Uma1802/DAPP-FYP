@@ -12,43 +12,49 @@ class ExportCert extends Component {
     };
 
     componentDidMount(){
+        
         var rows =[];
         var indices = [];
         const { current_account, certificate_contract } = this.state;
-        certificate_contract.methods.getCertificateCount().call().then((count) => {
+        certificate_contract.methods.getTotalCertificatesCount().call().then((count) => {
             //var i;
-            console.log("count: "+count);
+            console.log("total count: "+count);
             for (let j=0;j<count;j++)
                 indices.push(j);
             for (let i in indices) {
                 console.log("i val:"+i);
-                certificate_contract.methods.getParticularCertificate(i).call().then((certificate_details) => {
-                    console.log("certi dets: id="+i+" rcpaddr="+certificate_details[0]+" certi hash="+certificate_details[1]+" ipfs hash "+certificate_details[2] );
-                    if (certificate_details[0] == current_account){
-                        console.log("rcp addr matched");
-                        rows.push(<tr key={10000+i}>
-                            <td>{10000+i}</td>
-                            <td> <ExportButton 
-                                            current_account = {this.state.current_account} 
-                                            ipfsHash= {certificate_details[2]}
-                                            encKey= {certificate_details[3]}
-                                            certId={10000+i}
-                                            /> </td>
-                            </tr>);
-                        console.log("rows length: "+rows);
-                    }
-                    if (i == (count-1))
-                    {
-                        console.log("rows length end: "+rows);
-                        if (rows.length == 0)
-                        this.setState({element:<tbody><h3>No Certificates Received!</h3></tbody>});
-                        else
-                        this.setState({element:<tbody>{rows}</tbody>});
-                    }
-                });
+                try{
+                    certificate_contract.methods.getParticularCertificate(i).call().then((certificate_details) => {
+                        console.log("certi dets: id="+i+" rcpaddr="+certificate_details[0]+" certi hash="+certificate_details[1]+" ipfs hash "+certificate_details[2] );
+                        if (certificate_details[0] == current_account){
+                            console.log("rcp addr matched");
+                            rows.push(<tr key={10000+i}>
+                                <td>{10000+i}</td>
+                                <td> <ExportButton 
+                                                current_account = {this.state.current_account} 
+                                                ipfsHash= {certificate_details[2]}
+                                                encKey= {certificate_details[3]}
+                                                certId={10000+i}
+                                                /> </td>
+                                </tr>);
+                            console.log("rows length: "+rows);
+                        }
+                        if (i == (count-1))
+                        {
+                            console.log("rows length end: "+rows);
+                            if (rows.length == 0)
+                            this.setState({element:<tbody><h3>No Certificates Received!</h3></tbody>});
+                            else
+                            this.setState({element:<tbody>{rows}</tbody>});
+                        }
+                    });
+                }catch(error){
+                    console.error("Error: "+error);
+                }
             }
             
-        });                                   
+        });     
+                      
         }
 
     render(){
