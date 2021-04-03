@@ -6,6 +6,7 @@ contract Certificates {
     address public owner;
     mapping(uint256 => Certificate) certificatesList;
     uint256 public certificatesCount = 0;
+    uint256 public totalCertificatesCount = 0;
 
     struct Certificate {
         uint256 id;
@@ -56,8 +57,9 @@ contract Certificates {
                 participants.getParticularUsersType(_recipientAddr) == 3,
             "Permission denied"
         );
-        certificatesList[certificatesCount++] = Certificate(
-            certificatesCount,
+        ++certificatesCount;
+        certificatesList[totalCertificatesCount++] = Certificate(
+            totalCertificatesCount,
             _recipientAddr,
             _certificateHash,
             _ipfsHash,
@@ -88,8 +90,11 @@ contract Certificates {
     //     return (cnt, certificatesId);
     // }
 
-    function getCertificateCount() public view returns (uint256) {
+    function getCertificatesCount() public view returns (uint256) {
         return certificatesCount;
+    }
+    function getTotalCertificatesCount() public view returns (uint256) {
+        return totalCertificatesCount;
     }
 
     function getParticularCertificate(uint256 _id)
@@ -102,10 +107,10 @@ contract Certificates {
             string memory
         )
     {
-        require(
+        /*require(
             certificatesList[_id].exists == true,
             "Certificate with the given ID does not exist in the system"
-        );
+        );*/
         return (
             certificatesList[_id].recipientAddr,
             certificatesList[_id].certificateHash,
@@ -114,19 +119,34 @@ contract Certificates {
         );
     }
 
-    function getParticularCertificateHash(uint256 _id)
+    function getParticularCertificateRecipientAddress(uint256 _id)
         public
         view
-        returns (address, string memory)
+        returns (address)
     {
         require(
             certificatesList[_id].exists == true,
             "Certificate with the given ID does not exist in the system"
         );
+        
         return (
-            certificatesList[_id].recipientAddr,
-            certificatesList[_id].certificateHash
+            certificatesList[_id].recipientAddr            
         );
+    }
+    
+    function revokeCertificate(uint256 _id)
+        public
+    {
+        require(
+            certificatesList[_id].exists == true,
+            "Certificate with the given ID does not exist in the system"
+        );
+        require(
+            participants.getParticularUsersType(msg.sender) == 2,
+            "Permission denied"
+        );
+        --certificatesCount;
+        delete certificatesList[_id];
     }
 
     // function getParticularInstitutionCertificates(string memory _institution) view public returns(uint[] memory) {
