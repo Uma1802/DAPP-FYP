@@ -5,8 +5,8 @@ module.exports = {
   // to customize your Truffle configuration!
   contracts_build_directory: path.join(__dirname, "client/src/contracts"),
   networks: {
-    certchain: {
-            host: '127.0.0.1',
+    educertchain: {
+            host: '192.168.0.106',
             port: 8501,
             network_id: '1515'
     },

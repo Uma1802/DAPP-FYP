@@ -14,34 +14,7 @@ class App extends Component {
           contract: null,
           certificate_contract: null
           };
-
-
-
-  /*componentDidMount(){
-    let abi = Certificates.abi;
-    let bytecode = Certificates.bytecode;
-
-    let deploy_contract = new web3.eth.Contract(JSON.parse(abi));
-    let account = '0x7CCb5e94bFFBBEa86035324cb636C0E0ec3500d6';
-
-    let payload = {
-      data: bytecode
-    }
-
-    let parameter = {
-      from: account,
-      gas: web3.utils.toHex(800000),
-      gasPrice: web3.utils.toHex(web3.utils.toWei('30', 'gwei'))
-      }
-
-      deploy_contract.deploy(payload).send(parameter, (err, transactionHash) => {
-        console.log('Transaction Hash :', transactionHash);
-    }).on('confirmation', () => {}).then((certificate_contract) => {
-        console.log('Deployed Contract Address : ', certificate_contract.options.address);
-    })
-    
-    
-  }*/
+ 
   changeAppState = (web3, current_account, contract, certificate_contract) =>{
     this.setState({web3, current_account, contract, certificate_contract})
     console.log("Inside app.js- certi contract obj : "+this.state.certificate_contract);
