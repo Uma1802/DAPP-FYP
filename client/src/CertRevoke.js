@@ -24,7 +24,7 @@ class CertRevoke extends Component {
       try{
         let count = await this.state.certificate_contract.methods.getCertificatesCount().call();
         console.log("cert count: " + count);
-        await this.state.certificate_contract.methods.revokeCertificate(this.state.certId - 10000).send({ from: this.state.current_account });
+        await this.state.certificate_contract.methods.revokeCertificate(this.state.certId - 100000).send({ from: this.state.current_account });
         count = await this.state.certificate_contract.methods.getCertificatesCount().call();
         console.log("cert count: " + count);
         alert("Certificate Revocation Successful");
