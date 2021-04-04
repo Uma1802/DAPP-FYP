@@ -28,13 +28,13 @@ class ExportCert extends Component {
                         console.log("certi dets: id="+i+" rcpaddr="+certificate_details[0]+" certi hash="+certificate_details[1]+" ipfs hash "+certificate_details[2] );
                         if (certificate_details[0] == current_account){
                             console.log("rcp addr matched");
-                            rows.push(<tr key={10000+i}>
-                                <td>{10000+i}</td>
+                            rows.push(<tr key={100000+i}>
+                                <td>{100000+i}</td>
                                 <td> <ExportButton 
                                                 current_account = {this.state.current_account} 
                                                 ipfsHash= {certificate_details[2]}
                                                 encKey= {certificate_details[3]}
-                                                certId={10000+i}
+                                                certId={100000+i}
                                                 /> </td>
                                 </tr>);
                             console.log("rows length: "+rows);
@@ -62,7 +62,6 @@ class ExportCert extends Component {
     return(
         <div className="row row-content">
                     <div className="col-12">
-                        <h2>Export certificate</h2>
                         <div className="table-responsive">
                             <table className="table table-striped">
                                 <thead className="thead-dark">

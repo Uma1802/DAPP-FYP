@@ -10,20 +10,25 @@ class VerifyCert extends Component {
     }; 
 
     verificationStatus = () => {
-     
+      const id = this.state.cert_id;
       if (this.state.isVerified === 1) {           
         return ( 
           <div> 
-            <h2>Certificate {this.state.cert_id} is verified </h2>              
+            <h3>Verification Successful</h3>     
+            <p>Certificate ID: {id} </p>   
+            <p>File: {this.state.selectedFile.name} </p>         
           </div> 
-        ); 
+        );         
       } else if (this.state.isVerified === -1) { 
         return ( 
           <div> 
-            <h2>Certificate {this.state.selectedFile.name} is not verified !! </h2>              
+            <h3>Verification Failed</h3>     
+            <p>Certificate ID: {id} </p>   
+            <p>File: {this.state.selectedFile.name} </p>         
           </div> 
         ); 
       } 
+      
     }; 
      
     
@@ -49,19 +54,25 @@ class VerifyCert extends Component {
           console.log("type of certid: "+typeof(this.state.cert_id));
           var certid = parseInt(this.state.cert_id)
           console.log("type of certid2: "+typeof(certid));
-
-          certificate_contract.methods.getParticularCertificateHash(certid-100000).call().then(
-            (object)=>{
-              console.log("submitted hash: "+hash);
-              console.log("ret obj: "+object);
-              console.log("retrieved hash: "+object[1]);
-              if(object[1]===hash){
-                this.setState({isVerified:1});
+          console.log("certificate contract address: "+ certificate_contract );
+          certificate_contract.methods.checkIfCertificateExists(certid-100000).call().then(
+            (value)=>{
+              if(value){
+                certificate_contract.methods.getParticularCertificate(certid-100000).call().then(
+                  (object)=>{
+                    console.log("submitted hash: "+hash);
+                    console.log("ret obj: "+object);
+                    console.log("retrieved hash: "+object[1]);
+                    if(object[1]===hash){
+                      this.setState({isVerified:1});
+                    }
+                    else{
+                      this.setState({isVerified:-1});
+                    }
+                });
               }
-              else{
-                this.setState({isVerified:-1});
-              }
-          });
+            }
+          );
         }
       };
       reader.readAsArrayBuffer(this.state.selectedFile);   

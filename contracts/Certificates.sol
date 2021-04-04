@@ -10,6 +10,7 @@ contract Certificates {
 
     struct Certificate {
         uint256 id;
+        address issuerAddr;
         address recipientAddr;
         string certificateHash;
         string ipfsHash;
@@ -60,6 +61,7 @@ contract Certificates {
         ++certificatesCount;
         certificatesList[totalCertificatesCount++] = Certificate(
             totalCertificatesCount,
+            msg.sender,
             _recipientAddr,
             _certificateHash,
             _ipfsHash,
@@ -67,7 +69,7 @@ contract Certificates {
             true
         );
         emit certificateCreationEvent(
-            certificatesCount,
+            totalCertificatesCount,
             _recipientAddr,
             _certificateHash,
             _ipfsHash,
@@ -95,6 +97,10 @@ contract Certificates {
     }
     function getTotalCertificatesCount() public view returns (uint256) {
         return totalCertificatesCount;
+    }
+    function checkIfCertificateExists(uint256 _id) public view returns (bool) {
+        if(certificatesList[_id].exists) return true;
+        return false;
     }
 
     function getParticularCertificate(uint256 _id)
@@ -131,6 +137,20 @@ contract Certificates {
         
         return (
             certificatesList[_id].recipientAddr            
+        );
+    }
+    function getParticularCertificateIssuerAddress(uint256 _id)
+        public
+        view
+        returns (address)
+    {
+        require(
+            certificatesList[_id].exists == true,
+            "Certificate with the given ID does not exist in the system"
+        );
+        
+        return (
+            certificatesList[_id].issuerAddr            
         );
     }
     

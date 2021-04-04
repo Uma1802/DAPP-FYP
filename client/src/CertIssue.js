@@ -108,7 +108,8 @@ class CertIssue extends Component {
       reader.onload = async(evt) => {
         if (evt.target.readyState == FileReader.DONE) { // DONE == 2
           console.log("onload res "+ evt.target.result);
-
+          var start_time = Date.now();
+          console.log("time1 : ",start_time);
           const shaObj = new jsSHA("SHA-256", "ARRAYBUFFER");
           shaObj.update(evt.target.result);          
           var hash = shaObj.getHash("HEX");
@@ -123,7 +124,8 @@ class CertIssue extends Component {
           console.log("key is: ",key.length)
 
           const addedFile = await this.encryptUpload(evt.target.result,key);
-
+          var time2 = Date.now();
+          console.log("time2 : ",time2 -start_time);
           //const addedFile=this.uploadFileToIPFS();         
 
           /*  web3.eth.sendTransaction({
@@ -174,13 +176,16 @@ class CertIssue extends Component {
                 console.log("buff is: ",buff)   */  
 
                 console.log("ipfs cid: ",addedFile.cid.toString())
-            
+                var time3 = Date.now();
+                console.log("time3 : ",time3 - time2);
                 certificate_contract.methods.createCertificate(this.state.receiver_addr,
                   hash, addedFile.path, jsonStr
                   ).send({ from: this.state.current_account }).then(() => {
                     alert("Certificate issued!");
+                    var time4 = Date.now();
+                    console.log("time4 : ",time4- time3);
                   });
-    
+                
               });                             
                 
             }
