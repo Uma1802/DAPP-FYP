@@ -11,7 +11,8 @@ class VerifyCert extends Component {
 
     verificationStatus = () => {
       const id = this.state.cert_id;
-      if (this.state.isVerified === 1) {           
+
+      /*if (this.state.isVerified === 1) {           
         return ( 
           <div> 
             <h3>Verification Successful</h3>     
@@ -27,7 +28,7 @@ class VerifyCert extends Component {
             <p>File: {this.state.selectedFile.name} </p>         
           </div> 
         ); 
-      } 
+      } */
       
     }; 
      
@@ -64,10 +65,12 @@ class VerifyCert extends Component {
                     console.log("ret obj: "+object);
                     console.log("retrieved hash: "+object[1]);
                     if(object[1]===hash){
-                      this.setState({isVerified:1});
+                     // this.setState({isVerified:1});
+                     alert("Verification Successful")
                     }
                     else{
-                      this.setState({isVerified:-1});
+                     // this.setState({isVerified:-1});
+                     alert("Verification Failed")
                     }
                 });
               }

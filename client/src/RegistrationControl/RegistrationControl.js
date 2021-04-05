@@ -347,9 +347,7 @@ class RegistrationControl extends Component {
                                                 console.error(error);
                                                 }
                                             }); 
-                                        }                            
-                                       
-
+                                        }  
                                     this.props.history.push('/eduUser')
                                 }
                                 else if(res[2]==1)
