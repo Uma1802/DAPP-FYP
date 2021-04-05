@@ -9,7 +9,8 @@ class EduUserTabs extends Component {
         id:"",
         name:""
     }
-     componentWillMount(){
+     
+    componentWillMount(){
         const contract = this.props.contract;
         contract.methods.getParticularUser(this.props.current_account).call().then(
             (details)=>{
@@ -45,6 +46,7 @@ class EduUserTabs extends Component {
                 certificate_contract = {this.props.certificate_contract}/>
             </div>
             <div className="tab-pane fade" id="profile" role="tabpanel" aria-labelledby="profile-tab">
+            
                 <VerifyCert
                 web3 = {this.props.web3}
                 current_account = {this.props.current_account} 

@@ -2,14 +2,14 @@ import React, { Component } from 'react';
 import './PendingRequest.css';
 import AdmitButton from '../Buttons/AdmitButton';
 import DenyButton from '../Buttons/DenyButton';
-import Web3 from 'web3';
-import Participants from "../contracts/Participants.json";
 
 class PendingRequest extends Component {  
 
     state={
-        current_account: this.props.current_account, 
-        contract: this.props.contract,
+        //current_account: this.props.current_account, 
+        //contract: this.props.contract,
+        current_account:null,
+        contract:null,
         pending_requests:null,
         element: null,
         rows: []
@@ -26,6 +26,33 @@ class PendingRequest extends Component {
 
     componentDidMount(){
         console.log("in didmount");
+
+        console.log("current account in did mount before "+this.state.current_account)
+        console.log("props current account: ",this.props.current_account)
+
+        console.log("current account in did mount before "+this.state.contract)
+        console.log("props contract: ",this.props.contract)
+
+        if(!this.props.current_account || !this.props.contract){
+            //console.log("no props ")
+            const parsedCurrentAccount = JSON.parse(localStorage.getItem("currentAccount"))
+            console.log("in local currentAccount: ",parsedCurrentAccount)
+            const parsedContract = JSON.parse(localStorage.getItem("contract"))
+            console.log("in local contract: ",parsedContract)
+
+            this.setState({current_account: parsedCurrentAccount,contract:parsedContract})
+        }
+        else{
+            localStorage.setItem("currentAccount", JSON.stringify(this.props.current_account))
+            localStorage.setItem("contract", JSON.stringify(this.props.contract))
+
+            this.setState({current_account: this.props.current_account,contract:this.props.contract})
+        }
+
+        console.log("current account in did mount after "+this.state.current_account)
+        console.log("contract in did mount after "+this.state.contract)
+
+
         const { contract } = this.state;
         contract.methods.getPendingRequest().call().then(
             (res) => {
