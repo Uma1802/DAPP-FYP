@@ -100,7 +100,7 @@ class CertIssue extends Component {
       event.preventDefault();
       const web3 = this.state.web3;      
 
-      console.log("on file submit " +this.state.selectedFile+"name "+this.state.selectedFile.name); 
+      console.log("on file submit FILE NAME " +this.state.selectedFile); 
 
 
       var reader = new FileReader();
@@ -155,37 +155,41 @@ class CertIssue extends Component {
 
               participant_contract.methods.getPublicKey(this.state.receiver_addr).call().then(
                 (encryptionPublicKey) => {
-                console.log("encryptionPublicKey: ",encryptionPublicKey);
+                  if(encryptionPublicKey){
+                    console.log("encryptionPublicKey: ",encryptionPublicKey);
 
-                const encData = sigUtil.encrypt(
-                  encryptionPublicKey,
-                  { data: key},
-                  'x25519-xsalsa20-poly1305'
-                );
-  
-                console.log("encrypt data: ",encData)    
-                const jsonStr=JSON.stringify(
-                  encData                    
-                );    
-                console.log("json str: ",jsonStr);
-                console.log("json str type: ",typeof jsonStr);
-                /*var buff=Buffer.from(jsonStr,
-                  'utf8'
-                )   
-                console.log("type of buff: ",typeof buff)
-                console.log("buff is: ",buff)   */  
+                    const encData = sigUtil.encrypt(
+                      encryptionPublicKey,
+                      { data: key},
+                      'x25519-xsalsa20-poly1305'
+                    );
+      
+                    console.log("encrypt data: ",encData)    
+                    const jsonStr=JSON.stringify(
+                      encData                    
+                    );    
+                    console.log("json str: ",jsonStr);
+                    console.log("json str type: ",typeof jsonStr);
+                    /*var buff=Buffer.from(jsonStr,
+                      'utf8'
+                    )   
+                    console.log("type of buff: ",typeof buff)
+                    console.log("buff is: ",buff)   */  
 
-                console.log("ipfs cid: ",addedFile.cid.toString())
-                var time3 = Date.now();
-                console.log("time3 : ",time3 - time2);
-                certificate_contract.methods.createCertificate(this.state.receiver_addr,
-                  hash, addedFile.path, jsonStr
-                  ).send({ from: this.state.current_account }).then(() => {
-                    alert("Certificate issued!");
-                    var time4 = Date.now();
-                    console.log("time4 : ",time4- time3);
-                  });
-                
+                    console.log("ipfs cid: ",addedFile.cid.toString())
+                    var time3 = Date.now();
+                    console.log("time3 : ",time3 - time2);
+                    certificate_contract.methods.createCertificate(this.state.receiver_addr,
+                      hash, addedFile.path, jsonStr
+                      ).send({ from: this.state.current_account }).then(() => {
+                        alert("Certificate issued!");
+                        var time4 = Date.now();
+                        console.log("time4 : ",time4- time3);
+                      });
+                  } 
+                  else{
+                    alert("Certificate can't be issued as recipient public key is unavailable!")
+                  }
               });                             
                 
             }
@@ -217,11 +221,15 @@ class CertIssue extends Component {
         }
       };
 
-    reader.readAsArrayBuffer(this.state.selectedFile);     
+      if(this.state.selectedFile.type === 'application/pdf' ){
+        reader.readAsArrayBuffer(this.state.selectedFile);  
+      }
+      else{
+        alert("File type not supported")
+      }
+       
     }; 
      
-    // File content to be displayed after 
-    // file upload is complete 
     fileData = () => { 
      
       if (this.state.selectedFile) {           
@@ -237,7 +245,7 @@ class CertIssue extends Component {
         return ( 
           <div> 
             <br /> 
-            <h4>Choose before Pressing the Upload button</h4> 
+            <h4>Choose a file before pressing the Issue button</h4> 
           </div> 
         ); 
       } 

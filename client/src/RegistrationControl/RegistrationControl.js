@@ -477,7 +477,7 @@ class RegistrationControl extends Component {
                                         <select id="type" value={this.state.userType} onChange={this.onChange}
                                         name="userType" className="form-control custom-select bg-white border-left-0 border-md" required>
                                             <option value="">Select type of user</option>
-                                            <option value="Institution">Instituition</option>
+                                            <option value="Institution">Institution</option>
                                             <option value="EduUser">Edu-User</option>
                                         </select>
                                     </div>                   
@@ -493,7 +493,7 @@ class RegistrationControl extends Component {
                                         <select id="institution" name="institutionName" onChange={ this.onChangeFunc }
                                         className="form-control custom-select bg-white border-left-0 border-md"
                                         required={this.state.userType === "EduUser" || this.state.userType === "" || (this.state.userType==="Institution" && this.state.institutionName==="")}>
-                                            <option value="" disabled selected>Select instituition</option>
+                                            <option value="" disabled selected>Select institution</option>
                                             {institutionsList}
                                             {/* <option value="Others">Others</option> */}
                                             {/* {(this.state.userType === "EduUser" || this.state.userType === "") && ( <option value="Others">Others</option>           

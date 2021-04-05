@@ -15,8 +15,6 @@ class App extends Component {
           certificate_contract: null
           };
 
-
-
   /*componentDidMount(){
     let abi = Certificates.abi;
     let bytecode = Certificates.bytecode;

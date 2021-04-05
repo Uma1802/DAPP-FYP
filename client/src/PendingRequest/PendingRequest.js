@@ -8,9 +8,9 @@ import Participants from "../contracts/Participants.json";
 class PendingRequest extends Component {  
 
     state={
-        pending_requests:null,
         current_account: this.props.current_account, 
         contract: this.props.contract,
+        pending_requests:null,
         element: null,
         rows: []
     };
@@ -18,7 +18,6 @@ class PendingRequest extends Component {
     constructor(props){
         super(props);
         console.log("in constructor");
-        //this.loadRequests();
     }
 
     changeRenderFlag = () => {
