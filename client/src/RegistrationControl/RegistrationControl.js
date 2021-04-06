@@ -23,7 +23,7 @@ class RegistrationControl extends Component {
 
     constructor(props){
         super(props);
-        this.setState({web3: this.props.web3, current_account: this.props.current_account, contract: this.props.contract, certificate_contract: this.props.certificate_contract});
+        //this.setState({web3: this.props.web3, current_account: this.props.current_account, contract: this.props.contract, certificate_contract: this.props.certificate_contract});
     }
 
     onChange = (e) => {
@@ -50,8 +50,13 @@ class RegistrationControl extends Component {
     }
 
     componentDidMount(){
+        localStorage.clear();   //user logs in , presses back arrow and it leads to login page where local storage is cleared, 
+        //presses forward arrow- it will go but local storage values will be null, 
+        //hence need to prevent forward icon press from login page.
+        //can go to dashboard from login page only by logging in , not by forward arrow
         const web3 = new Web3(Web3.givenProvider);
-        this.setState({web3});
+        //this.setState({web3});
+        this.setState({web3, current_account: this.props.current_account, contract: this.props.contract, certificate_contract: this.props.certificate_contract});
         this.updateInstitutions();
     }
 
@@ -347,9 +352,7 @@ class RegistrationControl extends Component {
                                                 console.error(error);
                                                 }
                                             }); 
-                                        }                            
-                                       
-
+                                        }  
                                     this.props.history.push('/eduUser')
                                 }
                                 else if(res[2]==1)
@@ -477,7 +480,7 @@ class RegistrationControl extends Component {
                                         <select id="type" value={this.state.userType} onChange={this.onChange}
                                         name="userType" className="form-control custom-select bg-white border-left-0 border-md" required>
                                             <option value="">Select type of user</option>
-                                            <option value="Institution">Instituition</option>
+                                            <option value="Institution">Institution</option>
                                             <option value="EduUser">Edu-User</option>
                                         </select>
                                     </div>                   
@@ -493,7 +496,7 @@ class RegistrationControl extends Component {
                                         <select id="institution" name="institutionName" onChange={ this.onChangeFunc }
                                         className="form-control custom-select bg-white border-left-0 border-md"
                                         required={this.state.userType === "EduUser" || this.state.userType === "" || (this.state.userType==="Institution" && this.state.institutionName==="")}>
-                                            <option value="" disabled selected>Select instituition</option>
+                                            <option value="" disabled selected>Select institution</option>
                                             {institutionsList}
                                             {/* <option value="Others">Others</option> */}
                                             {/* {(this.state.userType === "EduUser" || this.state.userType === "") && ( <option value="Others">Others</option>           

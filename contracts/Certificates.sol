@@ -110,7 +110,8 @@ contract Certificates {
             address,
             string memory,
             string memory,
-            string memory
+            string memory,
+            address 
         )
     {
         /*require(
@@ -121,7 +122,8 @@ contract Certificates {
             certificatesList[_id].recipientAddr,
             certificatesList[_id].certificateHash,
             certificatesList[_id].ipfsHash,
-            certificatesList[_id].encKey
+            certificatesList[_id].encKey,
+            certificatesList[_id].issuerAddr
         );
     }
 

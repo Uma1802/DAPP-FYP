@@ -10,6 +10,11 @@ module.exports = {
             port: 8501,
             network_id: '1515'
     },
+    // ecchain: {
+    //         host: '127.0.0.1',
+    //         port: 7545,
+    //         network_id: '5777'
+    // },
     develop: {
       port: 7545
     }

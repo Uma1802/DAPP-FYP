@@ -15,7 +15,7 @@ contract Participants {
     struct User {
         uint256 id;
         string name;
-        uint256 userType; // 1 - AB, 2 - institution, 3 - edu-user
+        uint256 userType; // 1 - GB, 2 - institution, 3 - edu-user
         string institution;
         address addr;
         string publicKey;
@@ -38,7 +38,7 @@ contract Participants {
         usersAddrList[usersCount] = msg.sender;
         usersList[msg.sender] = User(
             1000,
-            "main_admin",
+            "Governing Body",
             1,
             "None",
             msg.sender,
