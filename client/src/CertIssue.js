@@ -176,14 +176,14 @@ class CertIssue extends Component {
                 console.log("buff is: ",buff)   */  
 
                 console.log("ipfs cid: ",addedFile.cid.toString())
-                var time3 = Date.now();
-                console.log("time3 : ",time3 - time2);
+                //var time3 = Date.now();
+                //console.log("time3 : ",time3 - time2);
                 certificate_contract.methods.createCertificate(this.state.receiver_addr,
                   hash, addedFile.path, jsonStr
                   ).send({ from: this.state.current_account }).then(() => {
-                    alert("Certificate issued!");
                     var time4 = Date.now();
-                    console.log("time4 : ",time4- time3);
+                    console.log("time4 : ",time4- time2);
+                    alert("Certificate issued!");
                   });
                 
               });                             
