@@ -18725,56 +18725,12 @@
         }
       },
       "links": {},
-      "address": "0xf2137A006d73DBAcfDA3561149141d00b0029Eb0",
-      "transactionHash": "0xd403f6528421ff8df85c7a119c2518b0e4189befa78c80cd77a95940aeac1c4a"
-    },
-    "5777": {
-      "events": {
-        "0x798938a50f8d2aa43b7d4f34c4d138ed9addaa374c21de0f645be92b50e177ac": {
-          "anonymous": false,
-          "inputs": [
-            {
-              "indexed": false,
-              "internalType": "uint256",
-              "name": "id",
-              "type": "uint256"
-            },
-            {
-              "indexed": false,
-              "internalType": "string",
-              "name": "name",
-              "type": "string"
-            },
-            {
-              "indexed": false,
-              "internalType": "uint256",
-              "name": "userType",
-              "type": "uint256"
-            },
-            {
-              "indexed": false,
-              "internalType": "string",
-              "name": "institution",
-              "type": "string"
-            },
-            {
-              "indexed": false,
-              "internalType": "address",
-              "name": "addr",
-              "type": "address"
-            }
-          ],
-          "name": "userEvent",
-          "type": "event"
-        }
-      },
-      "links": {},
-      "address": "0xA69B67E6114f0eBea6C606A28ccC4deCF0c70De8",
-      "transactionHash": "0x0dc362a8c87386d5f2ee9e9a4e3275807a9b891f9f6b41b1256f7d195dbf7613"
+      "address": "0xe2B2C626d42B26E70F7D08b72AE72A6b9ac6b307",
+      "transactionHash": "0xc2faca3c101691554afb6ef4a8ac6ea820bd7482c9dd78e8b8d46946a6611925"
     }
   },
   "schemaVersion": "3.3.2",
-  "updatedAt": "2021-04-06T07:06:57.159Z",
+  "updatedAt": "2021-04-06T07:58:42.504Z",
   "networkType": "ethereum",
   "devdoc": {
     "methods": {}

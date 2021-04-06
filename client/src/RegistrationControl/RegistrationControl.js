@@ -23,7 +23,7 @@ class RegistrationControl extends Component {
 
     constructor(props){
         super(props);
-        this.setState({web3: this.props.web3, current_account: this.props.current_account, contract: this.props.contract, certificate_contract: this.props.certificate_contract});
+        //this.setState({web3: this.props.web3, current_account: this.props.current_account, contract: this.props.contract, certificate_contract: this.props.certificate_contract});
     }
 
     onChange = (e) => {
@@ -50,8 +50,13 @@ class RegistrationControl extends Component {
     }
 
     componentDidMount(){
+        localStorage.clear();   //user logs in , presses back arrow and it leads to login page where local storage is cleared, 
+        //presses forward arrow- it will go but local storage values will be null, 
+        //hence need to prevent forward icon press from login page.
+        //can go to dashboard from login page only by logging in , not by forward arrow
         const web3 = new Web3(Web3.givenProvider);
-        this.setState({web3});
+        //this.setState({web3});
+        this.setState({web3, current_account: this.props.current_account, contract: this.props.contract, certificate_contract: this.props.certificate_contract});
         this.updateInstitutions();
     }
 

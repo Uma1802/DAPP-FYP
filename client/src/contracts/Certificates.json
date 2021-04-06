@@ -8670,56 +8670,12 @@
         }
       },
       "links": {},
-      "address": "0x8a4fb8177c0C15AF7C241cc367679c88816ABf44",
-      "transactionHash": "0xc080bbbf11b13e3646bc094feb567f9dc01cae99cb70ba8856fb55a11d24a868"
-    },
-    "5777": {
-      "events": {
-        "0xb6e5c25f42b87347c37285e3250ef625ba87d2deab893640cf0877311d8cf94d": {
-          "anonymous": false,
-          "inputs": [
-            {
-              "indexed": false,
-              "internalType": "uint256",
-              "name": "id",
-              "type": "uint256"
-            },
-            {
-              "indexed": false,
-              "internalType": "address",
-              "name": "recipientAddr",
-              "type": "address"
-            },
-            {
-              "indexed": false,
-              "internalType": "string",
-              "name": "certificateHash",
-              "type": "string"
-            },
-            {
-              "indexed": false,
-              "internalType": "string",
-              "name": "ipfsHash",
-              "type": "string"
-            },
-            {
-              "indexed": false,
-              "internalType": "string",
-              "name": "encKey",
-              "type": "string"
-            }
-          ],
-          "name": "certificateCreationEvent",
-          "type": "event"
-        }
-      },
-      "links": {},
-      "address": "0x74C6A79EC1D89B278D3D984E1143BCFfF37B316A",
-      "transactionHash": "0xa7e71800da7b79087ade66b29b885adc90fca566ca459400e81aee3b9de8c0dc"
+      "address": "0x7d557c4d4Be53C54fe0b221d8975B378Db537f52",
+      "transactionHash": "0xa2659b2064a203e38574929da5301823444ff7c45425af741c4f1d299e0759d9"
     }
   },
   "schemaVersion": "3.3.2",
-  "updatedAt": "2021-04-06T07:06:57.170Z",
+  "updatedAt": "2021-04-06T07:58:42.513Z",
   "networkType": "ethereum",
   "devdoc": {
     "methods": {}
