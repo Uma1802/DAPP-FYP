@@ -9,20 +9,22 @@ class InstitutionTabs extends Component {
     state={
         id:"",
         name:"",
-        type:"",
+        type:null
     }
     
      componentWillMount(){
-        const contract = this.props.contract;
+        const contract = this.props.participant_contract;
+        console.log("in will mount of insti tabs,contract is",this.props.participant_contract);
         contract.methods.getParticularUser(this.props.current_account).call().then(
             (details)=>{
+                console.log("type is ",details[2]);
                 this.setState({id:details[0],name:details[1],type:details[2]});
             }
         )
     }
 
     render(){
-        console.log("Inside Tabs- contract obj: "+this.props.participant_contract);
+        console.log("Inside Tabs render- contract obj: ",this.props.participant_contract);
 
     return(
 
@@ -37,13 +39,13 @@ class InstitutionTabs extends Component {
                 <a className="nav-link active" id="request-tab" data-toggle="tab" href="#request" role="tab" aria-controls="request" aria-selected="true">Dashboard</a>
             </li>
 
-            {this.state.type==2 > 0 &&
+            {this.state.type==2  &&
                 <li className="nav-item" role="presentation">
                     <a className="nav-link" id="issue-tab" data-toggle="tab" href="#issue" role="tab" aria-controls="issue" aria-selected="false">Issue certificates</a>
                 </li>                
             }
             
-            {this.state.type==2 > 0 &&
+            {this.state.type==2  &&
                 <li className="nav-item" role="presentation">
                     <a className="nav-link" id="revoke-tab" data-toggle="tab" href="#revoke" role="tab" aria-controls="revoke" aria-selected="false">Revoke certificates</a>
                 </li>

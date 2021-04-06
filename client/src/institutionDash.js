@@ -5,7 +5,7 @@ import Header from './Header/Header.js'
 class InstitutionDashBoard extends Component {  
      
     render(){
-    console.log("Inside instidash- contract obj: "+this.props.contract);
+    console.log("Inside instidash- contract obj: ",this.props.contract);
     return(
         <div>
             <Header/>

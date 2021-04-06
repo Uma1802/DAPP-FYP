@@ -38,7 +38,7 @@ contract Participants {
         usersAddrList[usersCount] = msg.sender;
         usersList[msg.sender] = User(
             1000,
-            "main_admin",
+            "Governing Body",
             1,
             "None",
             msg.sender,
