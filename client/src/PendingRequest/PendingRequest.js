@@ -55,8 +55,7 @@ class PendingRequest extends Component {
                this.setState({contract: participantInstance,current_account:currentAccount });
        }catch(error){
         console.error(error);
-    }
-
+        }
     }
 
     componentWillMount(){

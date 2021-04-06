@@ -3,6 +3,8 @@ import React, { Component } from 'react';
 import PendingRequest from '../PendingRequest/PendingRequest.js';
 import CertIssue from '../CertIssue.js';
 import CertRevoke from '../CertRevoke.js';
+import Web3 from 'web3';
+import Participants from "../contracts/Participants.json";
 
 class InstitutionTabs extends Component {  
 
@@ -11,16 +13,51 @@ class InstitutionTabs extends Component {
         name:"",
         type:null
     }
+
+    updateContract = async(e) =>{
+        const web3 = new Web3(Web3.givenProvider);
+       console.log("in update contract");
+       try{ 
+
+            const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
+            const account = accounts[0];
+            console.log("Logged in account: "+account);
+            const currentAccount = web3.utils.toChecksumAddress(account);
+            console.log("Checksum of logged in account: "+currentAccount);
+
+            const networkId = await web3.eth.net.getId();
+            console.log("current network id: "+networkId);
+            const deployedNetwork = Participants.networks[networkId];
+            const participantInstance = new web3.eth.Contract(
+                Participants.abi,
+                deployedNetwork && deployedNetwork.address,
+                );
+            console.log("Participants sol address: "+participantInstance.options.address);  
+        
+            //this.setState({contract: participantInstance });
+            return {participantInstance,currentAccount}
+       }catch(error){
+        console.error(error);
+        }
+    }
     
      componentWillMount(){
-        const contract = this.props.participant_contract;
-        console.log("in will mount of insti tabs,contract is",this.props.participant_contract);
-        contract.methods.getParticularUser(this.props.current_account).call().then(
-            (details)=>{
-                console.log("type is ",details[2]);
-                this.setState({id:details[0],name:details[1],type:details[2]});
-            }
-        )
+        this.updateContract().then(
+            (value)=>{
+                console.log("value  is ",value);
+                const contract = value["participantInstance"];
+                //this.props.participant_contract;
+                const current_account=value["currentAccount"];
+                console.log("value 0 is ",value["participantInstance"]);
+                console.log("value 0 is ",value["currentAccount"]);
+                console.log("in will mount of insti tabs,contract is",contract);
+                contract.methods.getParticularUser(current_account).call().then(
+                    (details)=>{
+                        console.log("type is ",details[2]);
+                        this.setState({id:details[0],name:details[1],type:details[2]});
+                    }
+                )
+            });
     }
 
     render(){
