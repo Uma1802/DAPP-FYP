@@ -12,21 +12,10 @@ class VerifyCert extends Component {
     verificationStatus = () => {
       const id = this.state.cert_id;
       if (this.state.isVerified === 1) {           
-        return ( 
-          <div> 
-            <h3>Verification Successful</h3>     
-            <p>Certificate ID: {id} </p>   
-            <p>File: {this.state.selectedFile.name} </p>         
-          </div> 
-        );         
+        alert("Verification Successful"); 
+               
       } else if (this.state.isVerified === -1) { 
-        return ( 
-          <div> 
-            <h3>Verification Failed</h3>     
-            <p>Certificate ID: {id} </p>   
-            <p>File: {this.state.selectedFile.name} </p>         
-          </div> 
-        ); 
+        alert("Verification Unsuccessful"); 
       } 
       
     }; 
