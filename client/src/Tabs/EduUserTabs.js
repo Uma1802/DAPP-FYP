@@ -9,6 +9,7 @@ class EduUserTabs extends Component {
         id:"",
         name:""
     }
+    
      componentWillMount(){
         const contract = this.props.contract;
         contract.methods.getParticularUser(this.props.current_account).call().then(
