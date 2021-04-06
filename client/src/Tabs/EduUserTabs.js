@@ -4,12 +4,16 @@ import ExportCert from '../exportCert.js'
 import VerifyCert from '../verifyCert'
 import Web3 from 'web3';
 import Participants from "../contracts/Participants.json";
+import Certificates from "../contracts/Certificates.json";
 
 class EduUserTabs extends Component {  
 
     state={
         id:"",
-        name:""
+        name:"",
+        current_account:this.props.current_account,
+        certificate_contract:this.props.certificate_contract,
+        participant_contract:this.props.participant_contract
     }
 
     updateContract = async(e) =>{
@@ -25,39 +29,48 @@ class EduUserTabs extends Component {
 
             const networkId = await web3.eth.net.getId();
             console.log("current network id: "+networkId);
+
             const deployedNetwork = Participants.networks[networkId];
             const participantInstance = new web3.eth.Contract(
                 Participants.abi,
                 deployedNetwork && deployedNetwork.address,
                 );
             console.log("Participants sol address: "+participantInstance.options.address);  
+
+            const deployedNetwork1 = Certificates.networks[networkId];
+            const contractInstance = new web3.eth.Contract(
+                        Certificates.abi,
+                        deployedNetwork1 && deployedNetwork1.address,
+                        );
+                console.log("Certificates sol address: "+contractInstance.options.address);
         
-            //this.setState({contract: participantInstance });
-            return {participantInstance,currentAccount}
+            this.setState({participant_contract: participantInstance, current_account:currentAccount, certificate_contract:contractInstance });
+            //return {participantInstance,currentAccount}
        }catch(error){
         console.error(error);
         }
     }
 
-    /*componentWillMount(){
-        const contract = this.props.contract;
+    componentWillMount(){
+        const contract = this.props.participant_contract;
         contract.methods.getParticularUser(this.props.current_account).call().then(
             (details)=>{
                 this.setState({id:details[0],name:details[1]});
             }
         )
-    }*/
+    }
     
-     componentWillMount(){
+     /*componentWillMount(){
         this.updateContract().then(
-            (value)=>{
-                console.log("value  is ",value);
-                const contract = value["participantInstance"];
-                //this.props.participant_contract;
-                const current_account=value["currentAccount"];
-                console.log("value 0 is ",value["participantInstance"]);
-                console.log("value 0 is ",value["currentAccount"]);
-                console.log("in will mount of insti tabs,contract is",contract);
+            ()=>{
+                //console.log("value  is ",value);
+                const contract = this.state.participant_contract;
+                // value["participantInstance"];                
+                const current_account=  this.state.current_account;
+                //value["currentAccount"];
+                //console.log("value 0 is ",value["participantInstance"]);
+               // console.log("value 0 is ",value["currentAccount"]);
+               // console.log("in will mount of insti tabs,contract is",contract);
                 contract.methods.getParticularUser(current_account).call().then(
                     (details)=>{
                         console.log("type is ",details[2]);
@@ -65,7 +78,7 @@ class EduUserTabs extends Component {
                     }
                 )
             });
-    }
+    }*/
     
 
     render(){

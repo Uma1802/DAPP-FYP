@@ -14,9 +14,6 @@ class App extends Component {
           contract: null,
           certificate_contract: null
           };
-<<<<<<< HEAD
- 
-=======
 
   /*componentDidMount(){
     let abi = Certificates.abi;
@@ -43,7 +40,6 @@ class App extends Component {
     
     
   }*/
->>>>>>> 5d3715ee3bf686a916d452ed9be12daf8c16fa52
   changeAppState = (web3, current_account, contract, certificate_contract) =>{
     this.setState({web3, current_account, contract, certificate_contract})
     console.log("Inside app.js- certi contract obj : "+this.state.certificate_contract);
