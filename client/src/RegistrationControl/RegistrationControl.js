@@ -17,7 +17,7 @@ class RegistrationControl extends Component {
         current_account: null, 
         contract: null,
         certificate_contract: null,
-        institutions: ["Others"],
+        institutions: [],
         flag: false
     };
 
@@ -88,10 +88,13 @@ class RegistrationControl extends Component {
                                 this.state.contract.methods.getInstitution(i).call().then(
                                     (inst) => {           
                                         console.log("institutionName: "+ inst);
+
                                         if(inst!=="None") {                    
+                                            console.log("inst list: "+this.state.institutions);
                                             this.setState({
                                                 institutions: [this.state.institutions, inst ],
                                                 });
+                                                console.log("inst list after: "+this.state.institutions);
                                         }
                                 });
                                                                                 
@@ -438,6 +441,8 @@ class RegistrationControl extends Component {
     let institutionsList = institutions.map((institution) =>
             <option key={institution}>{institution}</option>
     );
+    console.log("state insti list: ",institutions);
+    console.log("instiss list: ",institutionsList);
     
     return(
 

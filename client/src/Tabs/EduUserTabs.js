@@ -103,7 +103,7 @@ class EduUserTabs extends Component {
                 <ExportCert
                 web3 = {this.props.web3}
                 current_account = {this.props.current_account} 
-                contract = {this.props.contract}  
+                participant_contract = {this.props.participant_contract}  
                 certificate_contract = {this.props.certificate_contract}/>
             </div>
             <div className="tab-pane fade" id="profile" role="tabpanel" aria-labelledby="profile-tab">

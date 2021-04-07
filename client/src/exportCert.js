@@ -6,7 +6,7 @@ class ExportCert extends Component {
 
     state={
         current_account: this.props.current_account, 
-        participant_contract: this.props.contract,
+        participant_contract: this.props.participant_contract,
         certificate_contract: this.props.certificate_contract,
         element: null,
     };
@@ -14,6 +14,8 @@ class ExportCert extends Component {
 
     async getIssuerName(addr){
         console.log("issuer addr is ",addr)
+        console.log("parti contract: "+this.state.participant_contract);
+        console.log("props parti contract: "+this.props.participant_contract);
         const {participant_contract}=this.state;
         /*participant_contract.methods.getParticularUser(addr).call().then((issuer)=>{
             console.log("issuer name is ",issuer[1]);
@@ -46,14 +48,14 @@ class ExportCert extends Component {
                             let issuerName= await this.getIssuerName(certificate_details[4])
                             console.log("in did mount issuer is: ",issuerName)
                             //certificate_contract.methods.getParticularCertificateIssuerAddress(i).call().then((issuer_addr) => {
-                                rows.push(<tr key={100000+i}>
-                                    <td>{100000+i}</td>
+                                rows.push(<tr key={10000+i}>
+                                    <td>{10000+i}</td>
                                     <td>{issuerName}</td>
                                     <td> <ExportButton 
                                                     current_account = {this.state.current_account} 
                                                     ipfsHash= {certificate_details[2]}
                                                     encKey= {certificate_details[3]}
-                                                    certId={100000+i}
+                                                    certId={10000+i}
                                                     /> </td>
                                     </tr>);
                                 console.log("rows length: "+rows);

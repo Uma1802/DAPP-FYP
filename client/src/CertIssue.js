@@ -182,9 +182,13 @@ class CertIssue extends Component {
                     certificate_contract.methods.createCertificate(this.state.receiver_addr,
                       hash, addedFile.path, jsonStr
                       ).send({ from: this.state.current_account }).then(() => {
-                        alert("Certificate issued!");
+                        certificate_contract.methods.getTotalCertificatesCount().call().then(
+                          (val)=>{
+                            val=val-1;
+                        alert("Certificate issued with ID: "+ 10000+val);
                         var time4 = Date.now();
                         console.log("time4 : ",time4- time3);
+                          });
                       });
                   } 
                   else{
