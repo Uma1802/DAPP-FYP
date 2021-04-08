@@ -179,13 +179,13 @@ class PendingRequest extends Component {
                                             <td>{current_req_addr}</td>
                                             <td><AdmitButton
                                                 current_account = {this.state.current_account} 
-                                                contract = {this.state.contract} 
+                                                participant_contract = {this.state.contract} 
                                                 req_addr={current_req_addr}
                                                 deleteRequestRow = {this.deleteRequestRow}
                                                 /></td>
                                                 <td><DenyButton
                                                     current_account = {this.state.current_account} 
-                                                    contract = {this.state.contract} 
+                                                    participant_contract = {this.state.contract} 
                                                     req_addr={current_req_addr}
                                                     deleteRequestRow = {this.deleteRequestRow}
                                                 /></td>

@@ -1,9 +1,8 @@
 import React, { Component } from 'react';
 import ipfs from '../utils/ipfs'
 
-const IPFS = require('ipfs')
-const uint8ArrayConcat = require('uint8arrays/concat')
 const NodeCrypt = require('../lib//ipfs-crypt/crypto')
+const uint8ArrayConcat = require('uint8arrays/concat')
 const arrayBufferToHex = require('array-buffer-to-hex')
 
 class ExportButton extends Component {  
@@ -11,49 +10,28 @@ class ExportButton extends Component {
     async cat(path,key) {
 
         let encryptedBuffer;
-       
-          const crypto = new NodeCrypt({ key: key })
-          const chunks = []
+        const crypto = new NodeCrypt({ key: key })
+        const chunks = []
+
         try{
-          var i=0
+
           for await (const chunk of ipfs.cat(path)) {
-            //console.log("round: ",++i)
-            //console.log("chunk 1",chunk)  
             chunks.push(chunk)   
           }
-        
-        console.log("type of chunks ",typeof chunks)
-        console.log(chunks)
-  
-          //console.log("enc b from concat ",Buffer.concat(chunks)) causes error list arg must be arr of buff
+          //console.log(chunks)
           encryptedBuffer = uint8ArrayConcat(chunks)
-          console.log("type of en buff ",typeof encryptedBuffer)
-          console.log("enc b: ",encryptedBuffer)      
+          console.log("Encrypted buffer from IPFS: ",encryptedBuffer)      
         } catch (error) {
-          console.error("e2: "+error)
+          console.log("Error in downloading from IPFS: ",error)
         }
           const decryptedBuffer = crypto.decryptBuffer(encryptedBuffer)
           return decryptedBuffer
       }
 
-    async downloadFileFromIPFS(ipfsHash, key)   {        
- 
-        //const node = await IPFS.create()
+    async downloadFileFromIPFS(ipfsHash, key)   {   
 
-      // const version = await node.version()
-       //console.log('Version:', version.version)
- 
-      /* node.id()
-           .then(res => {
-             console.log(`Daemon active\nID: ${res.id}`)
-           })
-           .catch(err => {
-             console.error(err)
-           })*/
-
-           try{
-
-           const decryptedBuffer = await this.cat(ipfsHash,key)
+        try{
+            const decryptedBuffer = await this.cat(ipfsHash,key)
             console.log("decrypt: ",decryptedBuffer)
 
             var blob = new Blob([decryptedBuffer], { type: 'application/pdf' });
@@ -71,60 +49,63 @@ class ExportButton extends Component {
             link.click();
 
                 console.log('done!')
-            } catch (error) {
-                console.error(error)
-            }
- 
+        } catch (error) {
+            console.log(error)
+        }
+
            // node.stop().catch(err => console.error(err))
         
      }
  
 
     exportButtonHandler = async() => {  
-        console.log("in export button handler");
-        const { current_account,ipfsHash,encKey } = this.props;       
+
+        console.log("In export button handler");        
+        const { current_account,ipfsHash,encKey } = this.props;    
+        console.log("JSON string of encrypted key: ",encKey)   
           
+        try{            
+            const buff=Buffer.from(encKey,'utf8')
+            console.log("Encrypted key buffer is: ",buff)
+            const arrbuff=buff.buffer;
+            console.log("Encrypted key array buffer is ",arrbuff)
+            const encryptedKey = arrayBufferToHex(arrbuff)
+            console.log("Encrypted key in hex is: ",encryptedKey)  
+        }catch(error){
+              console.log("Invalid key: ",error);
+              alert("Invalid key")
+              return;
+        } 
+
         try{
-
-        console.log("json str enc key: ",encKey)
-
-        var buff=Buffer.from(encKey,
-        'utf8'
-        )
-
-        console.log("buff is: ",buff)
-
-        const arrbuff=buff.buffer;
-
-        console.log("arr buff is ",arrbuff)
-
-        const encryptedKey = arrayBufferToHex(arrbuff)
-       console.log("encrypted message ",encryptedKey)  
-
-       window.ethereum
-       .request({
-         method: 'eth_decrypt',
-         params: [encryptedKey, current_account],
-       })
-       .then((decryptedKey) => {
-        console.log("The decrypted key is:", decryptedKey)
-
-            this.downloadFileFromIPFS(ipfsHash,decryptedKey)           
+            console.log("Decrypting encrypted key...");   
+            window.ethereum
+            .request({
+              method: 'eth_decrypt',
+              params: [encryptedKey, current_account],
+            })
+            .then((decryptedKey) => {
+              console.log("The decrypted key is: ", decryptedKey)
+              try{
+                this.downloadFileFromIPFS(ipfsHash,decryptedKey)  
+              }
+              catch(error){
+                console.log("Error in downloading from IPFS: ",error);
+                alert("Error in downloading from IPFS")
+              }
+                       
+            });
         }
-       );}
         catch(error){
-            console.error("error in export "+error);
-        }   
-        finally{
-            
+            console.log("Error in decrypting encrypted key: ",error);
+            alert("Error in decrypting encrypted key")
         }
    }
 
     render(){
 
     return(
-        <button onClick={this.exportButtonHandler}> Download </button>
-      
+        <button onClick={this.exportButtonHandler}> Download </button>      
     )
     }
 }
