@@ -9,7 +9,7 @@ class DenyButton extends Component {
         console.log("Requesting address in deny button: "+ req_addr);  
           
         try{
-            participant_contract.methods.declineRequest(req_addr).send({ from: current_account }).then(() => {
+                participant_contract.methods.declineRequest(req_addr).send({ from: current_account }).then(() => {
                 console.log("Request of ",req_addr+" denied");                
                 alert("Denied request of user: ",req_addr)
                 deleteRequestRow(req_addr);

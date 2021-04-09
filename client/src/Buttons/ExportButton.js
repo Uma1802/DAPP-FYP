@@ -13,48 +13,35 @@ class ExportButton extends Component {
         const crypto = new NodeCrypt({ key: key })
         const chunks = []
 
-        try{
-
+        //try{
           for await (const chunk of ipfs.cat(path)) {
             chunks.push(chunk)   
           }
-          //console.log(chunks)
           encryptedBuffer = uint8ArrayConcat(chunks)
           console.log("Encrypted buffer from IPFS: ",encryptedBuffer)      
-        } catch (error) {
-          console.log("Error in downloading from IPFS: ",error)
-        }
-          const decryptedBuffer = crypto.decryptBuffer(encryptedBuffer)
-          return decryptedBuffer
+        /*} catch (error) {
+        console.error("Error1 in downloading from IPFS: ",error)
+        }*/
+        const decryptedBuffer = crypto.decryptBuffer(encryptedBuffer)
+        return decryptedBuffer
+
       }
 
     async downloadFileFromIPFS(ipfsHash, key)   {   
 
         try{
             const decryptedBuffer = await this.cat(ipfsHash,key)
-            console.log("decrypt: ",decryptedBuffer)
-
+            console.log("Decrypted buffer is: ",decryptedBuffer)
             var blob = new Blob([decryptedBuffer], { type: 'application/pdf' });
-
-            console.log("blob ",blob)
-
             var link = document.createElement('a');
             link.href = window.URL.createObjectURL(blob);
-            var fileName = "sampleFile";
             link.download = this.props.certId;
-            //fileName;
-
-            console.log("blob2 ")
-            
             link.click();
-
-                console.log('done!')
+            console.log('Done downloading file!')
         } catch (error) {
-            console.log(error)
-        }
-
-           // node.stop().catch(err => console.error(err))
-        
+            console.error("Error in downloading from IPFS: ",error);
+            alert("Error in downloading from IPFS")
+        }        
      }
  
 
@@ -66,40 +53,46 @@ class ExportButton extends Component {
           
         try{            
             const buff=Buffer.from(encKey,'utf8')
-            console.log("Encrypted key buffer is: ",buff)
             const arrbuff=buff.buffer;
-            console.log("Encrypted key array buffer is ",arrbuff)
             const encryptedKey = arrayBufferToHex(arrbuff)
             console.log("Encrypted key in hex is: ",encryptedKey)  
         }catch(error){
-              console.log("Invalid key: ",error);
+              console.error("Invalid key: ",error);
               alert("Invalid key")
               return;
         } 
+        
+        console.log("Decrypting encrypted key...");   
+        window.ethereum
+        .request({
+          method: 'eth_decrypt',
+          params: [encryptedKey, current_account],
+        })
+        .then(async (decryptedKey) => {
+          console.log("The decrypted key is: ", decryptedKey)
+          try{
 
-        try{
-            console.log("Decrypting encrypted key...");   
-            window.ethereum
-            .request({
-              method: 'eth_decrypt',
-              params: [encryptedKey, current_account],
-            })
-            .then((decryptedKey) => {
-              console.log("The decrypted key is: ", decryptedKey)
-              try{
-                this.downloadFileFromIPFS(ipfsHash,decryptedKey)  
-              }
-              catch(error){
-                console.log("Error in downloading from IPFS: ",error);
-                alert("Error in downloading from IPFS")
-              }
-                       
-            });
-        }
-        catch(error){
-            console.log("Error in decrypting encrypted key: ",error);
-            alert("Error in decrypting encrypted key")
-        }
+            const decryptedBuffer = await this.cat(ipfsHash,decryptedKey)
+            console.log("Decrypted buffer is: ",decryptedBuffer)
+
+            var blob = new Blob([decryptedBuffer], { type: 'application/pdf' });
+            var link = document.createElement('a');
+            link.href = window.URL.createObjectURL(blob);
+            link.download = this.props.certId;
+            link.click();
+            console.log('Done downloading file!')
+
+            //this.downloadFileFromIPFS(ipfsHash,decryptedKey)  
+          }
+          catch(error){
+            console.error("Error in downloading from IPFS: ",error);
+            alert("Error in downloading from IPFS")
+          }
+                    
+        }).catch(error => {
+          console.error("Error in decrypting encrypted key: ",error);
+          alert("Error in decrypting encrypted key")
+        });        
    }
 
     render(){
