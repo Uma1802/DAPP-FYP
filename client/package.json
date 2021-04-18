@@ -4,6 +4,7 @@
   "private": true,
   "dependencies": {
     "array-buffer-to-hex": "^1.0.0",
+    "bootstrap": "^4.6.0",
     "crypto": "^1.0.1",
     "crypto-js": "^4.0.0",
     "eth-sig-util": "^3.0.1",
@@ -14,7 +15,10 @@
     "ipfs-http-client": "^49.0.2",
     "jssha": "^3.2.0",
     "react": "16.11.0",
+    "react-bootstrap": "^1.5.2",
     "react-dom": "16.11.0",
+    "react-loading-overlay": "^1.0.1",
+    "react-overlay-loader": "0.0.3",
     "react-router-dom": "^5.2.0",
     "react-scripts": "3.2.0",
     "web3": "^1.2.2"

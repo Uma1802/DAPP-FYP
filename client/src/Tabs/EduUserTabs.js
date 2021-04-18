@@ -4,16 +4,12 @@ import ExportCert from '../exportCert.js'
 import VerifyCert from '../verifyCert'
 import Web3 from 'web3';
 import Participants from "../contracts/Participants.json";
-import Certificates from "../contracts/Certificates.json";
 
 class EduUserTabs extends Component {  
 
     state={
         id:"",
-        name:"",
-        current_account:this.props.current_account,
-        certificate_contract:this.props.certificate_contract,
-        participant_contract:this.props.participant_contract
+        name:""
     }
 
     updateContract = async(e) =>{
@@ -24,63 +20,62 @@ class EduUserTabs extends Component {
             const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
             const account = accounts[0];
             console.log("Logged in account: "+account);
-            const currentAccount = web3.utils.toChecksumAddress(account);
-            console.log("Checksum of logged in account: "+currentAccount);
+            const metamaskAccount = web3.utils.toChecksumAddress(account);
+            console.log("Checksum of logged in account: "+metamaskAccount);
 
-            const networkId = await web3.eth.net.getId();
-            console.log("current network id: "+networkId);
-
-            const deployedNetwork = Participants.networks[networkId];
-            const participantInstance = new web3.eth.Contract(
-                Participants.abi,
-                deployedNetwork && deployedNetwork.address,
+            const parsedCurrentAccount = JSON.parse(
+                localStorage.getItem("currentAccount")
                 );
-            console.log("Participants sol address: "+participantInstance.options.address);  
+            console.log("in local currentAccount: ", parsedCurrentAccount);
 
-            const deployedNetwork1 = Certificates.networks[networkId];
-            const contractInstance = new web3.eth.Contract(
-                        Certificates.abi,
-                        deployedNetwork1 && deployedNetwork1.address,
-                        );
-                console.log("Certificates sol address: "+contractInstance.options.address);
-        
-            this.setState({participant_contract: participantInstance, current_account:currentAccount, certificate_contract:contractInstance });
-            //return {participantInstance,currentAccount}
+            
+                const networkId = await web3.eth.net.getId();
+                console.log("current network id: "+networkId);
+
+                if (networkId !== 1515)
+                {
+                    throw new Error("Incorrect network ID")
+                }
+    
+                const deployedNetwork = Participants.networks[networkId];
+                const participantInstance = new web3.eth.Contract(
+                    Participants.abi,
+                    deployedNetwork && deployedNetwork.address,
+                    );
+                console.log("Participants sol address: "+participantInstance.options.address);      
+                return {participantInstance,parsedCurrentAccount,metamaskAccount}     
+                  
        }catch(error){
         console.error(error);
+        if (error.message.includes("Incorrect network ID"))
+            alert("Metamask is connected to an incorrect network ID. Please connect to the network ID 1515")
         }
     }
 
     componentWillMount(){
-        const contract = this.props.participant_contract;
-        contract.methods.getParticularUser(this.props.current_account).call().then(
-            (details)=>{
-                this.setState({id:details[0],name:details[1]});
-            }
-        )
+        this.updateContract().then(
+            (value)=>{
+                console.log("value  is ",value);
+
+                const participants_contract = value["participantInstance"];
+                const current_account=value["parsedCurrentAccount"];
+                const metamaskAccount= value["metamaskAccount"];
+                console.log("value 1 is ",value["parsedCurrentAccount"]);
+                console.log("mm account is: ",metamaskAccount);  
+
+                if(metamaskAccount===current_account){
+                    participants_contract.methods.getParticularUser(current_account).call().then(
+                        (details)=>{
+                            this.setState({id:details[0],name:details[1]});
+                        }
+                    );                
+                }
+                else{
+                    this.props.history.push("/unauthorized")
+                } 
+            });
     }
     
-     /*componentWillMount(){
-        this.updateContract().then(
-            ()=>{
-                //console.log("value  is ",value);
-                const contract = this.state.participant_contract;
-                // value["participantInstance"];                
-                const current_account=  this.state.current_account;
-                //value["currentAccount"];
-                //console.log("value 0 is ",value["participantInstance"]);
-               // console.log("value 0 is ",value["currentAccount"]);
-               // console.log("in will mount of insti tabs,contract is",contract);
-                contract.methods.getParticularUser(current_account).call().then(
-                    (details)=>{
-                        console.log("type is ",details[2]);
-                        this.setState({id:details[0],name:details[1],type:details[2]});
-                    }
-                )
-            });
-    }*/
-    
-
     render(){
 
     return(
@@ -101,15 +96,12 @@ class EduUserTabs extends Component {
         <div className="tab-content" id="myTabContent">
             <div className="tab-pane fade show active" id="home" role="tabpanel" aria-labelledby="home-tab">                
                 <ExportCert
-                web3 = {this.props.web3}
-                current_account = {this.props.current_account} 
-                participant_contract = {this.props.participant_contract}  
-                certificate_contract = {this.props.certificate_contract}/>
+                />
             </div>
             <div className="tab-pane fade" id="profile" role="tabpanel" aria-labelledby="profile-tab">
             
                 <VerifyCert
-                certificate_contract = {this.props.certificate_contract}/>
+               />
             </div>
             
         </div>

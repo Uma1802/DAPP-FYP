@@ -1,11 +1,13 @@
 import React,{Component} from 'react'; 
 import jsSHA from "jssha";
-  
+import Certificates from "./contracts/Certificates.json";
+import Web3 from 'web3';
 class VerifyCert extends Component { 
    
     state = {  
       cert_id:null,
       selectedFile: null,
+      certificate_contract:null
     }; 
     
     onFileChange = event => {   
@@ -16,14 +18,35 @@ class VerifyCert extends Component {
     onValueChange = (e) => {
       console.log("Changing "+e.target.name+" to: "+e.target.value);
       this.setState({[e.target.name]: e.target.value});
-    }     
+    }
+    
+    async componentDidMount(){
+      try{
+      console.log("in did mount")
+      const web3 = new Web3(Web3.givenProvider);
+      const networkId = await web3.eth.net.getId();
+      if (networkId !== 1515)
+      {
+          throw new Error("Incorrect network ID")
+      }
+      const deployedNetwork1 = Certificates.networks[networkId];
+      var certificateInstance = new web3.eth.Contract(
+                  Certificates.abi,
+                  deployedNetwork1 && deployedNetwork1.address,
+                  );      
+      console.log("cert inst is ",certificateInstance)
+      this.setState({ certificate_contract: certificateInstance });    
+      }
+      catch(error){
+        if (error.message.includes("Incorrect network ID"))
+          alert("Metamask is connected to an incorrect network ID. Please connect to the network ID 1515")
+      }
+    }
     
     handleSubmit = (e) => { 
 
       e.preventDefault();
-      console.log("Verification form submitted")      
-
-      const {certificate_contract}=this.props.certificate_contract; 
+      console.log("Verification form submitted")    
       const cert_file=this.state.selectedFile;
       var certid = parseInt(this.state.cert_id)
 
@@ -33,6 +56,7 @@ class VerifyCert extends Component {
 
         if (evt.target.readyState == FileReader.DONE) { 
           //console.log("onload res "+ evt.target.result);
+          const certificate_contract = this.state.certificate_contract;
           console.log("Done reading uploaded file")
           const shaObj = new jsSHA("SHA-256", "ARRAYBUFFER");
           shaObj.update(evt.target.result);          
@@ -69,18 +93,22 @@ class VerifyCert extends Component {
     };    
      
      
-    render() { 
+    render() {
+      console.log("in verify render") 
      
       return (
-        <div> 
-          <div className="card col-12 col-lg-6 reg-card">
+<div> 
 
-              <h2 className="card-header bg-dark text-white">Verify certificate</h2>
-              <div className="card-body">               
+<div className="container">   
+
+    <div className="row justify-content-center">
+        <div className="card col-12 col-lg-6 reg-card">
+            <h2 className="card-header bg-dark text-white">Verify certificate</h2>
+            <div className="card-body">               
 
                 <form onSubmit={(e) => this.handleSubmit(e)}>   
 
-                  <div className="form-group text-left">   
+                <div className="form-group text-left">   
                       <div className="input-group mb-4">
                           <div className="input-group-prepend">
                               <span className="input-group-text"><i className="far fa-address-card"></i></span>
@@ -105,13 +133,17 @@ class VerifyCert extends Component {
                       className="btn btn-primary"
                   >Verify</button>
                     
-                </form>     
+                </form>                     
 
-              </div>
-
-          </div>
+            </div>
 
         </div>
+
+    </div>
+
+</div>
+        
+</div>
       ); 
     } 
   } 

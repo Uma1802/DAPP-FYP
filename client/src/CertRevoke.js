@@ -1,12 +1,14 @@
 import React,{Component} from 'react'; 
+import Web3 from 'web3';
+import Certificates from "./contracts/Certificates.json";
 class CertRevoke extends Component { 
    
     state = {   
-      current_account: this.props.current_account, 
+      current_account: null, 
       participant_contract: this.props.participant_contract, 
-      web3: this.props.web3,
-      certificate_contract: this.props.certificate_contract,
-      certId: ""
+      certificate_contract: null,
+      certId: "",
+      revokeButtonDisabled: false
     }; 
      
 
@@ -14,11 +16,36 @@ class CertRevoke extends Component {
       this.setState({[e.target.name]: e.target.value});
       console.log("cert id: "+ this.state.certId);
     }
+
+    async componentDidMount(){
+      try{
+      console.log("in did mount")
+      const web3 = new Web3(Web3.givenProvider);
+      const networkId = await web3.eth.net.getId();
+      if (networkId !== 1515)
+                {
+                    throw new Error("Incorrect network ID")
+                }
+      const deployedNetwork1 = Certificates.networks[networkId];
+      var certificateInstance = new web3.eth.Contract(
+                  Certificates.abi,
+                  deployedNetwork1 && deployedNetwork1.address,
+                  );      
+      console.log("cert inst is ",certificateInstance)
+      this.setState({ certificate_contract: certificateInstance }); 
+    }
+    catch(error){
+      if (error.message.includes("Incorrect network ID"))
+              alert("Metamask is connected to an incorrect network ID. Please connect to the network ID 1515")
+    }      
+    }
     
     onRevoke = async(event)  => {
 
       event.preventDefault();
-      const web3 = this.state.web3;      
+      this.setState({revokeButtonDisabled: true})
+      const web3 = this.state.web3;   
+      this.setState({current_account: this.props.current_account});   
 
       console.log("inside on revoke for cert id: " +this.state.certId); 
       try{
@@ -28,11 +55,21 @@ class CertRevoke extends Component {
         count = await this.state.certificate_contract.methods.getCertificatesCount().call();
         console.log("cert count: " + count);
         alert("Certificate Revocation Successful");
+        this.setState({revokeButtonDisabled: false})
         
       }catch(error){
-        alert("No such certificate ID exists!");
+        if (error.message.includes("MetaMask Tx Signature: User denied transaction signature.")) {
+          alert("Unable to revoke certificate as transaction was rejected");
+        }
+        else if (error.message.includes("Certificate with the given ID does not exist in the system"))
+          alert("No such certificate ID exists!");
+        else if (error.message.includes("Permission denied"))
+          alert("You don't have the permission to revoke certificates!");
+        else
+          console.error(error)
+        this.setState({revokeButtonDisabled: false})
       }
-      };
+      }
 
     
      
@@ -65,6 +102,7 @@ class CertRevoke extends Component {
                     <button 
                         type="submit" 
                         className="btn btn-primary"
+                        disabled = {this.state.revokeButtonDisabled}
                     >Revoke Certificate</button>
                       
                   </form>     

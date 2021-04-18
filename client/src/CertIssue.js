@@ -1,6 +1,8 @@
 import React,{Component} from 'react'; 
 import jsSHA from "jssha";
 import ipfs from './utils/ipfs'
+import Web3 from 'web3';
+import Certificates from "./contracts/Certificates.json";
 const NodeCrypt = require('./lib//ipfs-crypt/crypto')
 const crypto = require('crypto')
 const sigUtil = require('eth-sig-util')
@@ -8,13 +10,35 @@ const sigUtil = require('eth-sig-util')
 class CertIssue extends Component { 
    
     state = {   
-      current_account: this.props.current_account, 
+      current_account: null, 
       participant_contract: this.props.participant_contract, 
       selectedFile: null,
-      web3: this.props.web3,
-      certificate_contract: this.props.certificate_contract,
+      certificate_contract: null,
       receiver_addr: ""
     }; 
+
+    async componentDidMount(){
+      try{
+      console.log("in did mount")
+      const web3 = new Web3(Web3.givenProvider);
+      const networkId = await web3.eth.net.getId();
+      if (networkId !== 1515)
+                {
+                    throw new Error("Incorrect network ID")
+                }
+      const deployedNetwork1 = Certificates.networks[networkId];
+      var certificateInstance = new web3.eth.Contract(
+                  Certificates.abi,
+                  deployedNetwork1 && deployedNetwork1.address,
+                  );      
+      console.log("cert inst is ",certificateInstance)
+      this.setState({ certificate_contract: certificateInstance });       
+      }
+      catch(error){
+        if (error.message.includes("Incorrect network ID"))
+                alert("Metamask is connected to an incorrect network ID. Please connect to the network ID 1515")
+      }
+    }
      
     // On file select (from the pop up) 
     onFileChange = event => { 
@@ -148,10 +172,17 @@ class CertIssue extends Component {
 
           if(addedFile){
             try{
+              const participant_contract = this.props.participant_contract;
+              this.setState({current_account: this.props.current_account});
               console.log("certi contract in props: "+this.props.certificate_contract);
               console.log("certi contract in state: "+this.state.certificate_contract);
+              console.log("participant contract in props: "+this.props.participant_contract);
+              console.log("participant contract in state: "+this.state.participant_contract);
+              console.log("current acc in props: "+this.props.current_account);
+              console.log("current acc in state: "+this.state.current_account);
+              
 
-              const { certificate_contract, participant_contract} = this.state;  
+              const { certificate_contract} = this.state;  
 
               participant_contract.methods.getPublicKey(this.state.receiver_addr).call().then(
                 (encryptionPublicKey) => {
@@ -179,6 +210,7 @@ class CertIssue extends Component {
                     console.log("ipfs cid: ",addedFile.cid.toString())
                     var time3 = Date.now();
                     console.log("time3 : ",time3 - time2);
+                    console.log("current acc: "+this.props.current_account);
                     certificate_contract.methods.createCertificate(this.state.receiver_addr,
                       hash, addedFile.path, jsonStr
                       ).send({ from: this.state.current_account }).then(() => {
@@ -189,6 +221,11 @@ class CertIssue extends Component {
                         var time4 = Date.now();
                         console.log("time4 : ",time4- time3);
                           });
+                        
+                      }).catch((error) => {
+                        if (error.message.includes("MetaMask Tx Signature: User denied transaction signature."))
+                          alert("Unable to issue certificate as transaction was rejected");
+                          
                       });
                   } 
                   else{
@@ -215,7 +252,8 @@ class CertIssue extends Component {
                   alert("Recipient user does not exist in the system");
                 } 
               }
-            }      
+            }  
+              
           }
 
           else{
@@ -277,6 +315,7 @@ class CertIssue extends Component {
                                                 onChange={this.onChange}
                                                 name = "receiver_addr"
                                                 value={this.state.receiver_addr}
+                                                required
                                                 
                             />    
                         </div>  
@@ -289,6 +328,7 @@ class CertIssue extends Component {
                     <button 
                         type="submit" 
                         className="btn btn-primary"
+                        disabled = {this.state.issueButtonDisabled}
                     >Issue certificate</button>
                         
                     </form>     

@@ -6,7 +6,7 @@ module.exports = {
   contracts_build_directory: path.join(__dirname, "client/src/contracts"),
   networks: {
     educertchain: {
-            host: '192.168.0.104',
+            host: '192.168.0.106',
             port: 8501,
             network_id: '1515'
     },

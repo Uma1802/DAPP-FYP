@@ -6,6 +6,9 @@ import Web3 from 'web3';
 import Participants from "../contracts/Participants.json";
 import getWeb3 from "../getWeb3";
 import Certificates from "../contracts/Certificates.json";
+//import LoadingOverlay from 'react-loading-overlay';
+//import { LoadingOverlay, Loader } from 'react-overlay-loader';
+//import { Spinner } from 'react-bootstrap';
 
 class RegistrationControl extends Component {  
     
@@ -17,8 +20,12 @@ class RegistrationControl extends Component {
         current_account: null, 
         contract: null,
         certificate_contract: null,
-        institutions: [],
-        flag: false
+        institutions: ["Others"],
+        flag: false,
+        regButtonDisabled: false,
+        loginButtonDisabled: false,
+        loginSpanCursorStyle: {cursor: "pointer"},
+        loading: false
     };
 
     constructor(props){
@@ -50,7 +57,9 @@ class RegistrationControl extends Component {
     }
 
     componentDidMount(){
-        localStorage.clear();   //user logs in , presses back arrow and it leads to login page where local storage is cleared, 
+        console.log("before clear");
+        localStorage.clear();
+        console.log("after clear")   //user logs in , presses back arrow and it leads to login page where local storage is cleared, 
         //presses forward arrow- it will go but local storage values will be null, 
         //hence need to prevent forward icon press from login page.
         //can go to dashboard from login page only by logging in , not by forward arrow
@@ -70,6 +79,10 @@ class RegistrationControl extends Component {
             //if (result !== "NO METAMASK"){
                 const networkId = await web3.eth.net.getId();
                 console.log("current network id: "+networkId);
+                if (networkId !== 1515)
+                {
+                    throw new Error("Incorrect network ID")
+                }
                 const deployedNetwork = Participants.networks[networkId];
                 const instance = new web3.eth.Contract(
                     Participants.abi,
@@ -113,6 +126,8 @@ class RegistrationControl extends Component {
         }
         catch(error){
             console.error(error);
+            if (error.message.includes("Incorrect network ID"))
+                alert("Metamask is connected to an incorrect network ID. Please connect to the network ID 1515")
             
         }
     }
@@ -179,6 +194,7 @@ class RegistrationControl extends Component {
     handleSubmit = async(e) => {
         e.preventDefault();
         try{
+            this.setState({regButtonDisabled: true}) //disable register button
             const web3 = new Web3(Web3.givenProvider);
             const result = await this.connectMetamaskAccount();
             if (result !== "NO METAMASK"){
@@ -186,6 +202,10 @@ class RegistrationControl extends Component {
                 console.log("Checksum of logged in account: "+current_account);
                 const networkId = await web3.eth.net.getId();
                 console.log("current network id: "+networkId);
+                if (networkId !== 1515)
+                {
+                    throw new Error("Incorrect network ID")
+                }
                 const deployedNetwork = Participants.networks[networkId];
                 const instance = new web3.eth.Contract(
                     Participants.abi,
@@ -216,19 +236,25 @@ class RegistrationControl extends Component {
                 console.log("requests list size: "+res.length);
                 try{
                     console.log("institution: "+this.state.institutionName);
+                    this.setState({loading: true})
                     await contract.methods.createUserRequest(this.state.userName,
                         usertype_number,
                         this.state.institutionName).send({ from: current_account });
+                    this.setState({loading: false})
+                    res = await contract.methods.getPendingRequest().call();
+                    console.log("requests list: "+res);
+                    console.log("requests list size: "+res.length);
+                    alert("Registration request sent!");
                 }
                 catch(error)
                 {
-                    alert("User already exists or user request is pending!");
+                    if (error.message.includes("MetaMask Tx Signature: User denied transaction signature."))
+                        alert("Registration request failed as transaction was rejected")
+                    else if (error.message.includes("User already in system or request sent"))
+                        alert("User already exists or user request is pending!");
                 }
                 
-                res = await contract.methods.getPendingRequest().call();
-                console.log("requests list: "+res);
-                console.log("requests list size: "+res.length);
-                alert("Registration request sent!");
+                
             }
             else{
                 alert("Please install metamask!");
@@ -236,6 +262,12 @@ class RegistrationControl extends Component {
         }
         catch(error){
             console.error(error);
+            if (error.message.includes("Incorrect network ID"))
+                alert("Metamask is connected to an incorrect network ID. Please connect to the network ID 1515")
+        }
+        finally{
+            this.setState({regButtonDisabled: false})
+            this.setState({loading: false})
         }
         
     }
@@ -253,7 +285,7 @@ class RegistrationControl extends Component {
                             Certificates.abi,
                             deployedNetwork1 && deployedNetwork1.address,
                             );
-                    console.log("Certificates sol address: "+instance1.options.address);
+                console.log("Certificates sol address: "+instance1.options.address);
 
                 this.setState({ web3, certificate_contract: instance1});
                 this.props.changeAppState(this.state.web3,this.state.current_account,this.state.contract,this.state.certificate_contract);
@@ -268,16 +300,22 @@ class RegistrationControl extends Component {
     loginButtonHandler = async() => {
         var loginFlag = false;
         var current_account=null;
+        var loginstatus = "";
         try{
-                const web3 = new Web3(Web3.givenProvider);
+            this.setState({loginButtonDisabled: true})
+            this.setState(prevState => ({loginSpanCursorStyle: {cursor: "not-allowed"}}))
+            const web3 = new Web3(Web3.givenProvider);
             const result = await this.connectMetamaskAccount();
             if (result !== "NO METAMASK")
             {
                 current_account = web3.utils.toChecksumAddress(result);
                 console.log("Checksum of logged in account: "+current_account);
-
                 const networkId = await web3.eth.net.getId();
                 console.log("current network id: "+networkId);
+                if (networkId !== 1515)
+                {
+                    throw new Error("Incorrect network ID")
+                }
                 const deployedNetwork = Participants.networks[networkId];
                 const instance = new web3.eth.Contract(
                     Participants.abi,
@@ -293,7 +331,7 @@ class RegistrationControl extends Component {
 
 
                 this.setState({ web3, current_account, contract: instance, certificate_contract: instance1});
-                const loginstatus = await this.checkIfUserExists();
+                loginstatus = await this.checkIfUserExists();
                 if (loginstatus === "USER EXISTS")
                 {
                     //const nonce = "HELLO WORLD NONCE";
@@ -309,11 +347,18 @@ class RegistrationControl extends Component {
                     catch(error){
                         console.log("inside sign catch");
                         console.error(error);
+                        if (error.message.includes("MetaMask Message Signature: User denied message signature."))
+                        {
+                            alert("Please sign the nonce message in Metamask to login");
+                        }
                         console.log("end of sign catch");
                     }
                     
                     
-                    try{var res = await web3.eth.personal.ecRecover(nonce, signature);}
+                    try{
+                        if (signature!==undefined)
+                            var res = await web3.eth.personal.ecRecover(nonce, signature);
+                    }
                     catch(err){ console.log("inside recover catch"); console.error(err); console.log("end of ecrecover catch");}
                     const recovered_address = web3.utils.toChecksumAddress(res);
                     console.log("Recovered address: "+recovered_address);
@@ -328,7 +373,8 @@ class RegistrationControl extends Component {
                                 this.props.changeAppState(this.state.web3,this.state.current_account,this.state.contract,this.state.certificate_contract);
                                 if(res[2]==2){
                                     console.log("if1");
-                                    this.props.history.push('/institution')
+                                    localStorage.setItem("currentAccount", JSON.stringify(current_account))
+                                    this.props.history.push('/institution')                                    
                                 }
                                     
                                 else if(res[2]==3)
@@ -355,13 +401,15 @@ class RegistrationControl extends Component {
                                                 console.error(error);
                                                 }
                                             }); 
-                                        }  
-                                    this.props.history.push('/eduUser')
+                                        }
+                                        localStorage.setItem("currentAccount", JSON.stringify(current_account))  
+                                    this.props.history.push('/eduUser')                                    
                                 }
                                 else if(res[2]==1)
                                 {
                                     console.log("if3");
-                                    this.props.history.push('/institution')
+                                    localStorage.setItem("currentAccount", JSON.stringify(current_account));
+                                    this.props.history.push('/institution')                                    
                                 } 
                                 
                         }                           
@@ -380,10 +428,13 @@ class RegistrationControl extends Component {
             console.log("inside last catch of loginhandler");
             console.error(error);
             console.log("end of last catch of loginhandler");
+            if (error.message.includes("Incorrect network ID"))
+                alert("Metamask is connected to an incorrect network ID. Please connect to the network ID 1515")
         }
         finally{
-            
-            if(!loginFlag){
+            this.setState({loginButtonDisabled: false})
+            this.setState(prevState => ({loginSpanCursorStyle: {cursor: "pointer"}}))
+            if(!loginFlag && loginFlag===""){
                 alert("Login failed!");
             }   
         }
@@ -446,10 +497,16 @@ class RegistrationControl extends Component {
     
     return(
 
-        <div> 
+        <div>
             <Header/>
+         
+            
+
+             
 
             <div className="container">   
+
+            
 
                 <div className="row justify-content-center">
                     <div className="card col-12 col-lg-6 reg-card">
@@ -525,13 +582,21 @@ class RegistrationControl extends Component {
                                 <button 
                                     type="submit" 
                                     className="btn btn-primary"
-                                >Register</button>
+                                    disabled={this.state.regButtonDisabled}
+                                >Register
                                 
-                            </form>                     
+                                </button>
+
+                                
+                            </form> 
+
+                            
+                               
+                                               
 
                             <div className="mt-2">
                                 <span>Already registered? </span>
-                                <span className="loginText" onClick={this.loginButtonHandler}>Login using metamask</span> 
+                                <span className="loginText" onClick={!this.state.loginButtonDisabled && (this.loginButtonHandler)} style={this.state.loginSpanCursorStyle}>Login using metamask</span> 
                             </div>
 
                         </div>
@@ -543,6 +608,8 @@ class RegistrationControl extends Component {
                 </div>
 
                 
+
+                
                  <div className="row justify-content-center">
                     <button 
                                                         type="submit" 
@@ -550,14 +617,11 @@ class RegistrationControl extends Component {
                                                         onClick={this.verifyButtonHandler}
                                                         background-color= "#314455"
                                                     >CLICK HERE TO VERIFY CERTIFICATES</button>
-                    </div>
-                                    
-
-
-
+                </div>
             </div>
-                    
-        </div>     
+              
+        </div>
+              
     )}   
 }
 export default RegistrationControl;

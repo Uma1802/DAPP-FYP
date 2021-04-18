@@ -6,6 +6,7 @@ import InstitutionDashBoard from './institutionDash'
 import EduUserDashBoard from './eduUserDash'
 import VerifyCert from "./verifyCert";
 import Header from "./Header/Header";
+import Unauthorized from "./unauthorized";
 
 class App extends Component {
   state = { 
@@ -63,23 +64,44 @@ class App extends Component {
           /> 
           
       )}/>
-       <Route exact path='/institution' render={({ history }) => (
-         <InstitutionDashBoard
-            web3 = {this.state.web3} 
-            current_account = {this.state.current_account} 
-            contract = {this.state.contract} 
-            certificate_contract = {this.state.certificate_contract}
-         />
-      )}/>
+       <Route exact path='/institution' render={({ history }) => {
 
-      <Route exact path='/eduUser' render={() => (
+          const parsedCurrentAccount = JSON.parse(
+            localStorage.getItem("currentAccount")
+          );            
+
+          if(parsedCurrentAccount)
+            return (
+            <InstitutionDashBoard
+                history={history}
+                web3 = {this.state.web3} 
+                current_account = {this.state.current_account} 
+                contract = {this.state.contract} 
+                certificate_contract = {this.state.certificate_contract}
+            />
+            );
+        else
+            
+              history.push('/unauthorized')
+            
+      }}/>
+
+      <Route exact path='/eduUser' render={({ history }) => (
               <EduUserDashBoard
+              history={history}
               web3 = {this.state.web3} 
               current_account = {this.state.current_account} 
               contract = {this.state.contract} 
               certificate_contract = {this.state.certificate_contract}
               />
             )}/>
+
+      <Route exact path='/unauthorized' render={() => (
+              <Unauthorized
+              />
+            )}/>
+
+      
 
       <Route exact path='/verify' render={() => (
         <div>

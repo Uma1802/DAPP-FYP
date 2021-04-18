@@ -11,7 +11,9 @@ class InstitutionTabs extends Component {
     state={
         id:"",
         name:"",
-        type:null
+        type:null,
+        participant_contract: null,
+        current_account: null
     }
 
     updateContract = async(e) =>{
@@ -19,14 +21,17 @@ class InstitutionTabs extends Component {
        console.log("in update contract");
        try{ 
 
-            const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
-            const account = accounts[0];
-            console.log("Logged in account: "+account);
-            const currentAccount = web3.utils.toChecksumAddress(account);
-            console.log("Checksum of logged in account: "+currentAccount);
+            const parsedCurrentAccount = JSON.parse(
+            localStorage.getItem("currentAccount")
+            );
+            console.log("in local currentAccount: ", parsedCurrentAccount);
 
             const networkId = await web3.eth.net.getId();
             console.log("current network id: "+networkId);
+            if (networkId !== 1515)
+            {
+                throw new Error("Incorrect network ID")
+            }
             const deployedNetwork = Participants.networks[networkId];
             const participantInstance = new web3.eth.Contract(
                 Participants.abi,
@@ -34,10 +39,17 @@ class InstitutionTabs extends Component {
                 );
             console.log("Participants sol address: "+participantInstance.options.address);  
         
-            //this.setState({contract: participantInstance });
-            return {participantInstance,currentAccount}
+            this.setState({participant_contract: participantInstance });
+
+            const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
+            const account = accounts[0];
+            const metamaskAccount = web3.utils.toChecksumAddress(account); 
+
+            return {participantInstance,parsedCurrentAccount,metamaskAccount}
        }catch(error){
         console.error(error);
+        if (error.message.includes("Incorrect network ID"))
+                alert("Metamask is connected to an incorrect network ID. Please connect to the network ID 1515")
         }
     }
     
@@ -45,19 +57,28 @@ class InstitutionTabs extends Component {
         this.updateContract().then(
             (value)=>{
                 console.log("value  is ",value);
+
                 const contract = value["participantInstance"];
-                //this.props.participant_contract;
-                const current_account=value["currentAccount"];
-                console.log("value 0 is ",value["participantInstance"]);
-                console.log("value 0 is ",value["currentAccount"]);
-                console.log("in will mount of insti tabs,contract is",contract);
-                contract.methods.getParticularUser(current_account).call().then(
-                    (details)=>{
-                        console.log("type is ",details[2]);
-                        this.setState({id:details[0],name:details[1],type:details[2]});
-                    }
-                )
-            });
+                const current_account=value["parsedCurrentAccount"];
+                const metamaskAccount= value["metamaskAccount"];
+
+                console.log("contract is ",contract);
+                console.log("value 1 is ",value["parsedCurrentAccount"]);
+                console.log("mm account is: ",metamaskAccount);  
+
+                if(metamaskAccount===current_account){
+                    contract.methods.getParticularUser(current_account).call().then(
+                        (details)=>{
+                            console.log("type is ",details[2]);
+                            this.setState({id:details[0],name:details[1],type:details[2],current_account:current_account});
+                            console.log("curr acc: "+this.state.current_account);
+                        }
+                    );                
+                }
+                else{
+                    this.props.history.push("/unauthorized")
+                } 
+            });              
     }
 
     render(){
@@ -92,25 +113,23 @@ class InstitutionTabs extends Component {
         </ul>
         <div className="tab-content" id="myTabContent">
             <div className="tab-pane fade show active" id="request" role="tabpanel" aria-labelledby="request-tab">
-                <PendingRequest
-                    current_account = {this.props.current_account} 
-                    contract = {this.props.participant_contract} 
+                <PendingRequest                   
                 />
             </div>
             <div className="tab-pane fade" id="issue" role="tabpanel" aria-labelledby="issue-tab">                
                 <CertIssue
                     web3 = {this.props.web3}
-                    current_account = {this.props.current_account} 
+                    current_account = {this.state.current_account} 
                     certificate_contract = {this.props.certificate_contract}
-                    participant_contract = {this.props.participant_contract}
+                    participant_contract = {this.state.participant_contract}
                 />
             </div>
             <div className="tab-pane fade" id="revoke" role="tabpanel" aria-labelledby="revoke-tab">                
                 <CertRevoke
                     web3 = {this.props.web3}
-                    current_account = {this.props.current_account} 
+                    current_account = {this.state.current_account} 
                     certificate_contract = {this.props.certificate_contract}
-                    participant_contract = {this.props.participant_contract}
+                    participant_contract = {this.state.participant_contract}
                 />
             </div>
         </div>
