@@ -51,11 +51,19 @@ class CertRevoke extends Component {
       try{
         let count = await this.state.certificate_contract.methods.getCertificatesCount().call();
         console.log("cert count: " + count);
-        await this.state.certificate_contract.methods.revokeCertificate(this.state.certId - 100000).send({ from: this.state.current_account });
-        count = await this.state.certificate_contract.methods.getCertificatesCount().call();
-        console.log("cert count: " + count);
-        alert("Certificate Revocation Successful");
-        this.setState({revokeButtonDisabled: false})
+        let check = await this.state.certificate_contract.methods.checkIfCertificateExists(this.state.certId - 100000).call();
+        if (check){
+          await this.state.certificate_contract.methods.revokeCertificate(this.state.certId - 100000).send({ from: this.state.current_account });
+          count = await this.state.certificate_contract.methods.getCertificatesCount().call();
+          console.log("cert count: " + count);
+          alert("Certificate Revocation Successful");
+          this.setState({revokeButtonDisabled: false})
+        }
+        else{
+          this.setState({revokeButtonDisabled: false})
+          alert("No such certificate ID exists!");
+        }
+         
         
       }catch(error){
         if (error.message.includes("MetaMask Tx Signature: User denied transaction signature.")) {

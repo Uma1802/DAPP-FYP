@@ -57,14 +57,14 @@ class ExportCert extends Component {
                             console.log("rcp addr matched");
                             let issuerName= await this.getIssuerName(certificate_details[4],participantInstance)
                             console.log("in did mount issuer is: ",issuerName)
-                                rows.push(<tr key={10000+i}>
-                                    <td>{10000+i}</td>
+                                rows.push(<tr key={Number(100000)+Number(i)}>
+                                    <td>{Number(100000)+Number(i)}</td>
                                     <td>{issuerName}</td>
                                     <td> <ExportButton 
                                                     current_account = {parsedCurrentAccount} 
                                                     ipfsHash= {certificate_details[2]}
                                                     encKey= {certificate_details[3]}
-                                                    certId={10000+i}
+                                                    certId={Number(100000)+Number(i)}
                                                     /> </td>
                                     </tr>);
                                 console.log("rows length: "+rows);

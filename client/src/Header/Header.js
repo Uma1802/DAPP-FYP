@@ -11,7 +11,7 @@ return (
     <div className="row">
 
     <div> 
-      <a href="index.html" className="d-none d-sm-inline">
+      <a href="/" className="d-none d-sm-inline">
           <div id="logo-img" alt="Logo image"></div>
         </a>     
     </div>       

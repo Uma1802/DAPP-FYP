@@ -64,7 +64,7 @@ class App extends Component {
           /> 
           
       )}/>
-       <Route exact path='/institution' render={({ history }) => {
+       <Route exact path='/validators' render={({ history }) => {
 
           const parsedCurrentAccount = JSON.parse(
             localStorage.getItem("currentAccount")

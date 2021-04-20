@@ -3,6 +3,7 @@
 }
 
 body {
+  height: 100%;
   font-size: 16px;
   background-color: #C96567;
   font-family: 'Oxygen', sans-serif;

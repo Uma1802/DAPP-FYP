@@ -3,6 +3,7 @@ import React, { Component } from 'react';
 import PendingRequest from '../PendingRequest/PendingRequest.js';
 import CertIssue from '../CertIssue.js';
 import CertRevoke from '../CertRevoke.js';
+import ViewCertificates from '../ViewCertificates.js';
 import Web3 from 'web3';
 import Participants from "../contracts/Participants.json";
 
@@ -99,13 +100,19 @@ class InstitutionTabs extends Component {
 
             {this.state.type==2  &&
                 <li className="nav-item" role="presentation">
-                    <a className="nav-link" id="issue-tab" data-toggle="tab" href="#issue" role="tab" aria-controls="issue" aria-selected="false">Issue certificates</a>
+                    <a className="nav-link" id="issue-tab" data-toggle="tab" href="#issue" role="tab" aria-controls="issue" aria-selected="false">Issue Certificates</a>
                 </li>                
             }
             
             {this.state.type==2  &&
                 <li className="nav-item" role="presentation">
-                    <a className="nav-link" id="revoke-tab" data-toggle="tab" href="#revoke" role="tab" aria-controls="revoke" aria-selected="false">Revoke certificates</a>
+                    <a className="nav-link" id="revoke-tab" data-toggle="tab" href="#revoke" role="tab" aria-controls="revoke" aria-selected="false">Revoke Certificates</a>
+                </li>
+            }
+            
+            {this.state.type==2  &&
+                <li className="nav-item" role="presentation">
+                    <a className="nav-link" id="view-tab" data-toggle="tab" href="#view" role="tab" aria-controls="view" aria-selected="false">View Issued Certificates</a>
                 </li>
             }
             
@@ -130,6 +137,14 @@ class InstitutionTabs extends Component {
                     current_account = {this.state.current_account} 
                     certificate_contract = {this.props.certificate_contract}
                     participant_contract = {this.state.participant_contract}
+                />
+            </div>
+            <div className="tab-pane fade" id="view" role="tabpanel" aria-labelledby="view-tab">
+                <ViewCertificates
+                    web3 = {this.props.web3}
+                    current_account = {this.state.current_account} 
+                    certificate_contract = {this.props.certificate_contract}
+                    participant_contract = {this.state.participant_contract}               
                 />
             </div>
         </div>

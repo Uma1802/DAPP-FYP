@@ -7,8 +7,12 @@ const Unauthorized = () => {
     <div>
       <Header/>
       <div className='container'>      
-        <h2>You are not authorized. Please login to continue.</h2>    
-      <p><Link to='/'>Back to Home</Link></p>
+      <br></br>
+      <br></br>
+        <h4>You are not authorized. Please login to continue.</h4>
+        <br></br>    
+
+      <h4><Link to='/'>Back to Home</Link></h4>
     </div>
     </div>
     

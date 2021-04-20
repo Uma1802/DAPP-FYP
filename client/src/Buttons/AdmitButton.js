@@ -16,7 +16,7 @@ class AdmitButton extends Component {
         
         participant_contract.methods.approveRequest(req_addr).send({ from: current_account }).then(() => {
             console.log("Request of ",req_addr+" approved");
-            alert("Admitted user: ",req_addr);
+            alert("Admitted user: "+req_addr);
             deleteRequestRow(req_addr);
             this.setState({admitButtonDisabled: false})
         }).catch(error => {

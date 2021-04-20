@@ -16,7 +16,7 @@ class DenyButton extends Component {
         
         participant_contract.methods.declineRequest(req_addr).send({ from: current_account }).then(() => {
         console.log("Request of ",req_addr+" denied");                
-        alert("Denied request of user: ",req_addr)
+        alert("Denied request of user: "+req_addr)
         deleteRequestRow(req_addr);
         this.setState({denyButtonDisabled: false})
         }).catch(error => {

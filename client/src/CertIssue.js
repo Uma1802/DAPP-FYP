@@ -217,7 +217,7 @@ class CertIssue extends Component {
                         certificate_contract.methods.getTotalCertificatesCount().call().then(
                           (val)=>{
                             val=val-1;
-                        alert("Certificate issued with ID: "+ 10000+val);
+                        alert("Certificate issued with ID: "+ (Number(100000)+Number(val)));
                         var time4 = Date.now();
                         console.log("time4 : ",time4- time3);
                           });
@@ -231,28 +231,19 @@ class CertIssue extends Component {
                   else{
                     alert("Certificate can't be issued as recipient public key is unavailable!")
                   }
-              });                             
+              }).catch(
+                (error) => {
+                  alert("Recipient user does not exist in the system");
+                }
+              )                       
                 
             }
             catch(error){
-              console.error(error);
-              msg = error.message;
-              console.log("error msg: "+msg);
-              if (msg.includes("User does not exist in the system"))
-              {
-                alert("Recipient user does not exist in the system");
-              }
+              console.error("ERRORR: "+error);
+              //alert("Recipient user does not exist in the system");
+              
             }
-            finally{
-              if (msg !== null)
-              {
-                console.log("error msg1: "+msg);
-                if (msg.includes("User does not exist in the system"))
-                {
-                  alert("Recipient user does not exist in the system");
-                } 
-              }
-            }  
+              
               
           }
 

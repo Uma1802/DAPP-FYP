@@ -94,7 +94,7 @@ class PendingRequest extends Component {
                     console.log("before getparticularrequest: " + current_req_addr);
                     this.state.participant_contract.methods.getParticularRequest(current_req_addr).call()
                     .then((request_details) => {
-                        if (currentUserType == 1 || (currentUserType == 2 && request_details[3] == currentUserInstitution)) {
+                        if ((currentUserType == 1  && (request_details[2] == 2 || (request_details[2] == 3 && request_details[3] == "Others"))|| (currentUserType == 2 && request_details[3] == currentUserInstitution))) {
                           console.log("NAME: " + request_details[1]);
                           console.log("INSTITUTION" + request_details[3]);
                           console.log("REQ ADDR: " + current_req_addr);
@@ -186,11 +186,33 @@ class PendingRequest extends Component {
       this.setState({
         element: (
           <tbody>
-            <h2>No Pending Requests!</h2>
+            <br></br>
+            <h3>No Pending Requests!</h3>
           </tbody>
         ),
       });
-    else this.setState({ element: <tbody>{this.state.rows}</tbody> });
+    else this.setState({ 
+                        element: 
+                        <div>
+                        <h3>Pending requests</h3>
+                        <div className="table-responsive">
+                          <table className="table table-striped">
+                            <thead className="thead-dark">
+                              <tr>
+                                <th>Name</th>
+                                <th>Institution</th>
+                                <th>Address</th>
+                                <th>&nbsp;</th>
+                                <th>&nbsp;</th>
+                              </tr>
+                            </thead>                                
+                            <tbody>
+                              {this.state.rows}
+                            </tbody>
+                          </table>
+                        </div> 
+                        </div>
+                      });
   };
 
   render() {

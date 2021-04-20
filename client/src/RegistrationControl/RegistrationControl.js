@@ -6,9 +6,10 @@ import Web3 from 'web3';
 import Participants from "../contracts/Participants.json";
 import getWeb3 from "../getWeb3";
 import Certificates from "../contracts/Certificates.json";
-//import LoadingOverlay from 'react-loading-overlay';
+import LoadingOverlay from 'react-loading-overlay';
 //import { LoadingOverlay, Loader } from 'react-overlay-loader';
-//import { Spinner } from 'react-bootstrap';
+import { Spinner } from 'react-bootstrap';
+import BounceLoader from 'react-spinners/BounceLoader'
 
 class RegistrationControl extends Component {  
     
@@ -24,7 +25,7 @@ class RegistrationControl extends Component {
         flag: false,
         regButtonDisabled: false,
         loginButtonDisabled: false,
-        loginSpanCursorStyle: {cursor: "pointer"},
+        loginSpanCursorStyle: {cursor: "pointer", color: "#007bff"},
         loading: false
     };
 
@@ -104,8 +105,10 @@ class RegistrationControl extends Component {
 
                                         if(inst!=="None") {                    
                                             console.log("inst list: "+this.state.institutions);
+                                            let ins=this.state.institutions;
+                                            ins.push(inst);
                                             this.setState({
-                                                institutions: [this.state.institutions, inst ],
+                                                institutions: ins
                                                 });
                                                 console.log("inst list after: "+this.state.institutions);
                                         }
@@ -194,8 +197,10 @@ class RegistrationControl extends Component {
     handleSubmit = async(e) => {
         e.preventDefault();
         try{
+            
             this.setState({regButtonDisabled: true}) //disable register button
             const web3 = new Web3(Web3.givenProvider);
+            
             const result = await this.connectMetamaskAccount();
             if (result !== "NO METAMASK"){
                 const current_account = web3.utils.toChecksumAddress(result);
@@ -236,21 +241,25 @@ class RegistrationControl extends Component {
                 console.log("requests list size: "+res.length);
                 try{
                     console.log("institution: "+this.state.institutionName);
-                    this.setState({loading: true})
+                    
                     await contract.methods.createUserRequest(this.state.userName,
                         usertype_number,
-                        this.state.institutionName).send({ from: current_account });
-                    this.setState({loading: false})
+                        this.state.institutionName).send({ from: current_account })
+                    
+                    
                     res = await contract.methods.getPendingRequest().call();
                     console.log("requests list: "+res);
                     console.log("requests list size: "+res.length);
+                    
                     alert("Registration request sent!");
                 }
                 catch(error)
                 {
+                    console.error("eroor: "+error)
+                    console.log("error msg: "+error.msg)
                     if (error.message.includes("MetaMask Tx Signature: User denied transaction signature."))
                         alert("Registration request failed as transaction was rejected")
-                    else if (error.message.includes("User already in system or request sent"))
+                    else if (error.message.includes("Transaction has been reverted by the EVM"))
                         alert("User already exists or user request is pending!");
                 }
                 
@@ -303,7 +312,7 @@ class RegistrationControl extends Component {
         var loginstatus = "";
         try{
             this.setState({loginButtonDisabled: true})
-            this.setState(prevState => ({loginSpanCursorStyle: {cursor: "not-allowed"}}))
+            this.setState(prevState => ({loginSpanCursorStyle: {cursor: "not-allowed", color: "#707c89"}}))
             const web3 = new Web3(Web3.givenProvider);
             const result = await this.connectMetamaskAccount();
             if (result !== "NO METAMASK")
@@ -374,7 +383,7 @@ class RegistrationControl extends Component {
                                 if(res[2]==2){
                                     console.log("if1");
                                     localStorage.setItem("currentAccount", JSON.stringify(current_account))
-                                    this.props.history.push('/institution')                                    
+                                    this.props.history.push('/validators')                                    
                                 }
                                     
                                 else if(res[2]==3)
@@ -409,7 +418,7 @@ class RegistrationControl extends Component {
                                 {
                                     console.log("if3");
                                     localStorage.setItem("currentAccount", JSON.stringify(current_account));
-                                    this.props.history.push('/institution')                                    
+                                    this.props.history.push('/validators')                                    
                                 } 
                                 
                         }                           
@@ -489,8 +498,15 @@ class RegistrationControl extends Component {
     render(){
     
     let institutions = this.state.institutions;
+    // let institutionsList=[]
+    console.log("instiss length: "+institutions.length)
+    // for (let i=0; i<institutions.length; i++)
+    // {
+    //     institutionsList.push(<option key={institutions[i]}>{institutions[i]}</option>)
+    // }
+    
     let institutionsList = institutions.map((institution) =>
-            <option key={institution}>{institution}</option>
+           <option key={institution}>{institution}</option>
     );
     console.log("state insti list: ",institutions);
     console.log("instiss list: ",institutionsList);
@@ -498,7 +514,10 @@ class RegistrationControl extends Component {
     return(
 
         <div>
-            <Header/>
+            
+           
+                <Header/>
+            
          
             
 
@@ -509,6 +528,8 @@ class RegistrationControl extends Component {
             
 
                 <div className="row justify-content-center">
+                
+                
                     <div className="card col-12 col-lg-6 reg-card">
                         <h2 className="card-header bg-dark text-white">REGISTRATION</h2>
                         <div className="card-body">               
@@ -547,6 +568,8 @@ class RegistrationControl extends Component {
                                         </select>
                                     </div>                   
                                 </div>
+
+                                
                                 
                                 <div className="form-group text-left">
                                     <div className="input-group mb-4">
@@ -588,6 +611,7 @@ class RegistrationControl extends Component {
                                 </button>
 
                                 
+                                
                             </form> 
 
                             
@@ -605,6 +629,7 @@ class RegistrationControl extends Component {
 
                     
 
+                    
                 </div>
 
                 
@@ -618,8 +643,14 @@ class RegistrationControl extends Component {
                                                         background-color= "#314455"
                                                     >CLICK HERE TO VERIFY CERTIFICATES</button>
                 </div>
+
+                <div className="bottom"></div>
+            
+            
             </div>
-              
+            
+            
+             
         </div>
               
     )}   
